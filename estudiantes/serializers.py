@@ -35,8 +35,3 @@ class NotaEstudianteSerializer(serializers.ModelSerializer):
     class Meta:
         model = NotaEstudiante
         fields = '__all__'
-
-class InscripcionEstudianteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = InscripcionEstudiante
-        fields = '__all__'

@@ -31,7 +31,3 @@ class AsignaturaCursadaView(viewsets.ModelViewSet):
 class NotaEstudianteView(viewsets.ModelViewSet):
     queryset=NotaEstudiante.objects.all()
     serializer_class=NotaEstudianteSerializer
-
-class InscripcionEstudianteView(viewsets.ModelViewSet):
-    queryset=InscripcionEstudiante.objects.all()
-    serializer_class=InscripcionEstudianteSerializer
