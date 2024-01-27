@@ -1,6 +1,7 @@
 
 from django.db import models
 
+
 class AnioCarrera(models.Model):
     id = models.SmallAutoField(primary_key=True)
     nombre_anio = models.CharField(max_length=50, blank=True, null=True)
@@ -13,10 +14,9 @@ class AnioCarrera(models.Model):
 
 
 class Asignatura(models.Model):
-    id = models.SmallAutoField(primary_key=True)
-    id_docente = models.ForeignKey('Docente', models.DO_NOTHING, db_column='id_docente', blank=True, null=True)
-    codigo_asignatura = models.CharField(max_length=30, blank=True, null=True)
+    codigo_asignatura = models.CharField(primary_key=True, max_length=30)
     nombre_asignatura = models.CharField(max_length=150, blank=True, null=True)
+    id_docente = models.ForeignKey('Docente', models.DO_NOTHING, db_column='id_docente', blank=True, null=True)
     descripccion = models.CharField(max_length=255, blank=True, null=True)
     horas_practicas = models.SmallIntegerField(blank=True, null=True)
     horas_teoricas = models.SmallIntegerField(blank=True, null=True)
@@ -35,7 +35,7 @@ class Asignatura(models.Model):
 class AsignaturaCursada(models.Model):
     id = models.SmallAutoField(primary_key=True)
     ci_estudiante = models.ForeignKey('Estudiante', models.DO_NOTHING, db_column='ci_estudiante', blank=True, null=True)
-    id_asignatura = models.ForeignKey(Asignatura, models.DO_NOTHING, db_column='id_asignatura', blank=True, null=True)
+    codigo_asignatura = models.ForeignKey(Asignatura, models.DO_NOTHING, db_column='codigo_asignatura', blank=True, null=True)
     id_malla_academica = models.ForeignKey('MallaAcademica', models.DO_NOTHING, db_column='id_malla_academica', blank=True, null=True)
     anio_cursado = models.CharField(max_length=20, blank=True, null=True)
     gestion_actual = models.CharField(max_length=20, blank=True, null=True)
@@ -121,8 +121,7 @@ class AuthUserUserPermissions(models.Model):
 
 
 class Carrera(models.Model):
-    id = models.SmallAutoField(primary_key=True)
-    codigo_carrera = models.CharField(max_length=30, blank=True, null=True)
+    codigo_carrera = models.CharField(primary_key=True, max_length=30)
     nombre_carrera = models.CharField(max_length=100, blank=True, null=True)
     documento_creacion = models.CharField(max_length=100, blank=True, null=True)
     descripcion = models.CharField(max_length=255, blank=True, null=True)
@@ -246,6 +245,7 @@ class EducacionPrimaria(models.Model):
     estado = models.CharField(max_length=20, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     modified = models.DateTimeField(auto_now=True, blank=True, null=True)
+
     class Meta:
         managed = False
         db_table = 'educacion_primaria'
@@ -254,7 +254,7 @@ class EducacionPrimaria(models.Model):
 class Estudiante(models.Model):
     ci_estudiante = models.SmallIntegerField(primary_key=True)
     extencion = models.CharField(max_length=20, blank=True, null=True)
-    id_carrera = models.ForeignKey(Carrera, models.DO_NOTHING, db_column='id_carrera', blank=True, null=True)
+    codigo_carrera = models.ForeignKey(Carrera, models.DO_NOTHING, db_column='codigo_carrera', blank=True, null=True)
     nombres = models.CharField(max_length=100, blank=True, null=True)
     apellidop = models.CharField(db_column='apellidoP', max_length=50, blank=True, null=True)  # Field name made lowercase.
     apellidom = models.CharField(db_column='apellidoM', max_length=50, blank=True, null=True)  # Field name made lowercase.
@@ -263,17 +263,31 @@ class Estudiante(models.Model):
     genero = models.CharField(max_length=30, blank=True, null=True)
     fecha_nacimiento = models.DateField(blank=True, null=True)
     depa_nacimiento = models.CharField(max_length=50, blank=True, null=True)
+    prov_nacimiento = models.CharField(max_length=50, blank=True, null=True)
+    munic_nacimiento = models.CharField(max_length=50, blank=True, null=True)
     fotografia = models.CharField(max_length=255, blank=True, null=True)
+    tipo_ingreso = models.CharField(max_length=50, blank=True, null=True)
     estado_civil = models.CharField(max_length=50, blank=True, null=True)
     idioma_nativo = models.CharField(max_length=50, blank=True, null=True)
     idioma_regular = models.CharField(max_length=50, blank=True, null=True)
     email = models.CharField(max_length=100, blank=True, null=True)
     nacionalidad = models.CharField(max_length=50, blank=True, null=True)
+    anio_ingreso = models.CharField(max_length=30, blank=True, null=True, db_comment='a├▒o de ingreso a la universidad')
+    numero_archivo = models.SmallIntegerField(blank=True, null=True, db_comment='el numero de archivo donde esta almacenado su informacion')
+    homologacion = models.CharField(max_length=100, blank=True, null=True, db_comment='si/no')
+    estado_homologacion = models.CharField(max_length=255, blank=True, null=True)
+    convalidacion = models.CharField(max_length=100, blank=True, null=True, db_comment='si/no')
+    estado_convalidacion = models.CharField(max_length=255, blank=True, null=True)
+    egresado = models.CharField(max_length=30, blank=True, null=True, db_comment='si/no')
+    descripcion_egresado = models.CharField(max_length=255, blank=True, null=True)
+    titulado = models.CharField(max_length=30, blank=True, null=True, db_comment='si/no')
+    descripcion_titulado = models.CharField(max_length=255, blank=True, null=True)
     estado = models.CharField(max_length=50, blank=True, null=True)
     descripcion_estado = models.CharField(max_length=255, blank=True, null=True)
     baja = models.CharField(max_length=20, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     modified = models.DateTimeField(auto_now=True, blank=True, null=True)
+
     class Meta:
         managed = False
         db_table = 'estudiante'
@@ -292,8 +306,8 @@ class IdiomaOriginario(models.Model):
 
 class MallaAcademica(models.Model):
     id = models.SmallAutoField(primary_key=True)
-    id_carrera = models.ForeignKey(Carrera, models.DO_NOTHING, db_column='id_carrera', blank=True, null=True)
-    id_asignatura = models.ForeignKey(Asignatura, models.DO_NOTHING, db_column='id_asignatura', blank=True, null=True)
+    codigo_carrera = models.ForeignKey(Carrera, models.DO_NOTHING, db_column='codigo_carrera', blank=True, null=True)
+    codigo_asignatura = models.ForeignKey(Asignatura, models.DO_NOTHING, db_column='codigo_asignatura', blank=True, null=True)
     anio_aprobacion = models.CharField(max_length=10, blank=True, null=True)
     doc_resolucion = models.CharField(max_length=255, blank=True, null=True)
     descripcion = models.CharField(max_length=255, blank=True, null=True)
@@ -312,6 +326,7 @@ class Municipio(models.Model):
     nombre_municipio = models.CharField(max_length=20, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     modified = models.DateTimeField(auto_now=True, blank=True, null=True)
+
     class Meta:
         managed = False
         db_table = 'municipio'
@@ -320,13 +335,15 @@ class Municipio(models.Model):
 class NotaEstudiante(models.Model):
     id = models.SmallAutoField(primary_key=True)
     id_asignatura_cursada = models.ForeignKey(AsignaturaCursada, models.DO_NOTHING, db_column='id_asignatura_cursada', blank=True, null=True)
-    nota_num_normal = models.SmallIntegerField(blank=True, null=True)
+    nota_num_gestion = models.SmallIntegerField(blank=True, null=True)
     instancia = models.CharField(max_length=20, blank=True, null=True, db_comment='si/no')
     nota_num_instancia = models.SmallIntegerField(blank=True, null=True)
     nota_num_final = models.SmallIntegerField(blank=True, null=True)
     nota_literal_espaniol = models.CharField(max_length=100, blank=True, null=True)
     nota_literal_quechua = models.CharField(max_length=100, blank=True, null=True)
-    gestion = models.CharField(max_length=20, blank=True, null=True)
+    res_cualitativo = models.CharField(max_length=20, blank=True, null=True)
+    resultado_gestion = models.CharField(max_length=30, blank=True, null=True, db_comment='TUKUCHIN/QUEPAKUN')
+    gestion_cursada = models.CharField(max_length=20, blank=True, null=True)
     observacion = models.CharField(max_length=255, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     modified = models.DateTimeField(auto_now=True, blank=True, null=True)
@@ -359,6 +376,7 @@ class Organizacion(models.Model):
     otros = models.CharField(max_length=100, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     modified = models.DateTimeField(auto_now=True, blank=True, null=True)
+
     class Meta:
         managed = False
         db_table = 'organizacion'
@@ -370,6 +388,7 @@ class Provincia(models.Model):
     nombre_provincia = models.CharField(max_length=50, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     modified = models.DateTimeField(auto_now=True, blank=True, null=True)
+
     class Meta:
         managed = False
         db_table = 'provincia'
