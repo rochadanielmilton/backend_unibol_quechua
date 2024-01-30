@@ -50,7 +50,7 @@ def ObenerAsignaturasNoCursadas(request,ci_estudiante):
         concluido = asig.estado_gestion_espaniol
         if concluido == 'APROBADO':
             lista_asignaturas_aprobadas.append(asig.id_malla_academica.codigo_asignatura_id)
-            print("WWWWWWWWWWWW",asig.id_malla_academica.codigo_asignatura_id)
+            print("WWWWWWWWWWWW",asig.id_malla_academica)
         #print("QQQQQQQQQQQQQQ",codigo_asignatura_concluida,"---", concluido)
 
 
