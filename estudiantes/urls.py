@@ -12,7 +12,7 @@ router.register(r'educacionPrimaria',EducacionPrimariaView, basename='educacionP
 router.register(r'asignaturaCursada',AsignaturaCursadaView, basename='asignaturaEstudiante')
 router.register(r'notaEstudiante',NotaEstudianteView, basename='notaEstudiante')
 router.register(r'mallaAcademica',MallaAcademicaView,basename='mallaAcademica')
-router.register(r'asignaturas',AsignaturaView, basename='asignaturas')
+
 
 urlpatterns = [
     path('',include(router.urls)),

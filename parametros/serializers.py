@@ -35,3 +35,8 @@ class NumerosLetrasSerializer(serializers.ModelSerializer):
     class Meta:
         model = NumerosLetras
         fields = '__all__'
+
+class AsignaturaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Asignatura
+        fields = '__all__'

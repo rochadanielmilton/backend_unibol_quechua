@@ -6,7 +6,10 @@ from .models import *
 from .serializers import *
 from datetime import datetime
 
-
+class AsignaturaView(viewsets.ModelViewSet):
+    queryset=Asignatura.objects.all()
+    serializer_class=AsignaturaSerializer
+    
 class CarreraView(viewsets.ModelViewSet):
     queryset = Carrera.objects.all()    
     serializer_class = CarreraSerializer

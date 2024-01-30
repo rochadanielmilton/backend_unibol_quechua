@@ -2,9 +2,13 @@ from rest_framework import serializers
 from parametros.models import*
 
 class EstudianteSerializer(serializers.ModelSerializer):
+    nombre_carrera=serializers.SerializerMethodField()
     class Meta:
         model = Estudiante
         fields = '__all__'
+    def get_nombre_carrera(self, estudiante):
+        carrera=estudiante.codigo_carrera
+        return carrera.nombre_carrera if carrera else None
 
 class DocumentacionEstudianteSerializer(serializers.ModelSerializer):
     class Meta:
@@ -35,10 +39,7 @@ class NotaEstudianteSerializer(serializers.ModelSerializer):
     class Meta:
         model = NotaEstudiante
         fields = '__all__'
-class AsignaturaSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Asignatura
-        fields = '__all__'
+
 
 class MallaAcademicaSerializer(serializers.ModelSerializer):
     nombre_carrera=serializers.SerializerMethodField()

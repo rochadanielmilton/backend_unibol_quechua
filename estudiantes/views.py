@@ -5,9 +5,7 @@ from .serializers import *
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-class AsignaturaView(viewsets.ModelViewSet):
-    queryset=Asignatura.objects.all()
-    serializer_class=AsignaturaSerializer
+
 
 class MallaAcademicaView(viewsets.ModelViewSet):
     queryset=MallaAcademica.objects.all()
