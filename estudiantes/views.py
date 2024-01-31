@@ -85,19 +85,31 @@ def estadisticas_materias(ci_estudiante):
     ci_estudiante=ci_estudiante
     )
     # Obtener la cantidad de asignaturas aprobadas
-    cantidad_aprobadas = asignaturas_aprobadas.count()
+    if asignaturas_aprobadas:
+        cantidad_aprobadas = asignaturas_aprobadas.count()
+    else:
+        cantidad_aprobadas=0
 
     # Obtener el promedio de las notas finales de las asignaturas aprobadas
     promedio_aprobadas = asignaturas_aprobadas.aggregate(Avg('id_nota__nota_num_final'))['id_nota__nota_num_final__avg']
-    promedio_aprobadas_redondeado=round(promedio_aprobadas,2)
+    if promedio_aprobadas:
+        promedio_aprobadas_redondeado=round(promedio_aprobadas,2)
+    else:
+        promedio_aprobadas_redondeado=0
 
     # Obtener estadísticas de todas las materias cursadas
     asignaturas_aprobadas = AsignaturaCursada.objects.filter(
     ci_estudiante=ci_estudiante
     )
-    cantidad_todas = asignaturas_aprobadas.count()
+    if asignaturas_aprobadas:
+        cantidad_todas = asignaturas_aprobadas.count()
+    else:
+        cantidad_todas=0
     promedio_todas = asignaturas_aprobadas.aggregate(Avg('id_nota__nota_num_final'))['id_nota__nota_num_final__avg']
-    promedio_todas_redondedado=round(promedio_todas,2)
+    if promedio_todas:
+        promedio_todas_redondedado=round(promedio_todas,2)
+    else:
+        promedio_aprobadas=0
 
     return {
         'cantidad_aprobadas': cantidad_aprobadas,
@@ -165,3 +177,8 @@ def estadisticas_materias_aprobadas(ci_estudiante):
         'promedio_aprobadas': promedio_aprobadas_redondeado,
 
     }
+
+def actualizar_anio_cursado(ci_estudiante):
+    asignaturas_aprobadas = AsignaturaCursada.objects.filter(
+    ci_estudiante=ci_estudiante
+    )
