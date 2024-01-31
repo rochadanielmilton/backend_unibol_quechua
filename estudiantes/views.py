@@ -60,63 +60,65 @@ def ObenerAsignaturasNoCursadas(request,ci_estudiante):
 @api_view(['GET'])
 def ObtenerHitorialAcademico(request,ci_estudiante):
     estudiante=Estudiante.objects.filter(ci_estudiante=ci_estudiante)
-    grado=VerificarGrado(ci_estudiante)
-    fecha_hora=datetime.now()
-    fecha_emision = fecha_hora.strftime("%Y-%m-%d %H:%M:%S")
-    otros_datos= estadisticas_materias(ci_estudiante)
-    if not estudiante:
-        return Response({"message":"El CI que ingreso no corresponde a ningun estudiante registrado"})
-    else:
+    if estudiante:
+        
+        grado=VerificarGrado(ci_estudiante)
+        fecha_hora=datetime.now()
+        fecha_emision = fecha_hora.strftime("%Y-%m-%d %H:%M:%S")
+               
+       
         estudiante_serializer=EstudianteHistorialSerializer(estudiante.first()).data
         asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante)
-        serializer_asignaturas_cursadas=AsignaturaCursadaSerializer(asignaturas_cursadas, many=True).data
-        return Response({"estudiante":estudiante_serializer,
-                         "grado":grado,
-                         "fecha_emision":fecha_emision,
-                        "datos":serializer_asignaturas_cursadas,
-                        "otros_datos":otros_datos
-                        })
+        if asignaturas_cursadas:
+            otros_datos= estadisticas_materias(ci_estudiante)
+            serializer_asignaturas_cursadas=AsignaturaCursadaSerializer(asignaturas_cursadas, many=True).data
+            return Response({"estudiante":estudiante_serializer,
+                    "grado":grado,
+                    "fecha_emision":fecha_emision,
+                    "datos":serializer_asignaturas_cursadas,
+                    "otros_datos":otros_datos
+                    })
+        else:
+            return Response({"message":"El estudiante no cuenta con ninguna materia registrada"})
+    else:
+        return Response({"Message":"El ci ingresado no coincide con ningun registro"})
 
 
 def estadisticas_materias(ci_estudiante):
     # Filtrar las asignaturas cursadas
-    asignaturas_aprobadas = AsignaturaCursada.objects.filter(
-    id_nota__resultado_gestion_espaniol='APROBADO',
-    ci_estudiante=ci_estudiante
-    )
-    # Obtener la cantidad de asignaturas aprobadas
-    if asignaturas_aprobadas:
+    asignaturas_aprobadas = AsignaturaCursada.objects.filter(id_nota__resultado_gestion_espaniol='APROBADO',ci_estudiante=ci_estudiante)
+    if asignaturas_aprobadas: 
         cantidad_aprobadas = asignaturas_aprobadas.count()
+        # Obtener el promedio de las notas finales de las asignaturas aprobadas
+        promedio_aprobadas = asignaturas_aprobadas.aggregate(Avg('id_nota__nota_num_final'))['id_nota__nota_num_final__avg']
+        if promedio_aprobadas:
+            promedio_aprobadas_redondeado=round(promedio_aprobadas,2)
+        else:
+            promedio_aprobadas_redondeado=0
     else:
         cantidad_aprobadas=0
-
-    # Obtener el promedio de las notas finales de las asignaturas aprobadas
-    promedio_aprobadas = asignaturas_aprobadas.aggregate(Avg('id_nota__nota_num_final'))['id_nota__nota_num_final__avg']
-    if promedio_aprobadas:
-        promedio_aprobadas_redondeado=round(promedio_aprobadas,2)
-    else:
         promedio_aprobadas_redondeado=0
 
-    # Obtener estadísticas de todas las materias cursadas
-    asignaturas_aprobadas = AsignaturaCursada.objects.filter(
-    ci_estudiante=ci_estudiante
-    )
-    if asignaturas_aprobadas:
-        cantidad_todas = asignaturas_aprobadas.count()
+        # Obtener estadísticas de todas las materias cursadas
+    asignaturas_todas = AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante)
+    if asignaturas_todas:
+        cantidad_todas = asignaturas_todas.count()
+        promedio_todas = asignaturas_todas.aggregate(Avg('id_nota__nota_num_final'))['id_nota__nota_num_final__avg']  
+        
+        if promedio_todas:
+            promedio_todas_redondedado=round(promedio_todas,2)
+        else:
+            promedio_todas_redondedado=0
     else:
         cantidad_todas=0
-    promedio_todas = asignaturas_aprobadas.aggregate(Avg('id_nota__nota_num_final'))['id_nota__nota_num_final__avg']
-    if promedio_todas:
-        promedio_todas_redondedado=round(promedio_todas,2)
-    else:
-        promedio_aprobadas=0
+        promedio_todas_redondedado=0
 
     return {
         'cantidad_aprobadas': cantidad_aprobadas,
         'promedio_aprobadas': promedio_aprobadas_redondeado,
         'cantidad_todas': cantidad_todas,
         'promedio_todas': promedio_todas_redondedado,
-    }
+        }
 
 # @api_view(['GET'])    
 # def ActualizarNotas(request):
