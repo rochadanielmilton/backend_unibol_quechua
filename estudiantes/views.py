@@ -79,8 +79,9 @@ def ObtenerHitorialAcademico(request,ci_estudiante):
 
 
 def estadisticas_materias(ci_estudiante):
-    # Filtrar las asignaturas cursadas que tienen una nota final aprobada
+    # Filtrar las asignaturas cursadas
     asignaturas_aprobadas = AsignaturaCursada.objects.filter(
+    id_nota__resultado_gestion_espaniol='APROBADO',
     ci_estudiante=ci_estudiante
     )
     # Obtener la cantidad de asignaturas aprobadas
@@ -105,9 +106,6 @@ def estadisticas_materias(ci_estudiante):
         'promedio_todas': promedio_todas_redondedado,
     }
 
-
-
-
 # @api_view(['GET'])    
 # def ActualizarNotas(request):
 #     notas=NotaEstudiante.objects.all()
@@ -129,3 +127,41 @@ def VerificarGrado(ci_estudiante):
             break  # Termina la iteración tan pronto como se encuentra una coincidencia
 
     return resultado
+
+@api_view(['GET'])
+def ObtenerMateriasAprobadas(request,ci_estudiante):
+    estudiante=Estudiante.objects.filter(ci_estudiante=ci_estudiante)
+    grado=VerificarGrado(ci_estudiante)
+    fecha_hora=datetime.now()
+    fecha_emision = fecha_hora.strftime("%Y-%m-%d %H:%M:%S")
+    otros_datos= estadisticas_materias_aprobadas(ci_estudiante)
+    if not estudiante:
+        return Response({"message":"El CI que ingreso no corresponde a ningun estudiante registrado"})
+    else:
+        estudiante_serializer=EstudianteHistorialSerializer(estudiante.first()).data
+        asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante,estado_gestion_espaniol='APROBADO')
+        serializer_asignaturas_cursadas=AsignaturaCursadaSerializer(asignaturas_cursadas, many=True).data
+        return Response({"estudiante":estudiante_serializer,
+                         "grado":grado,
+                         "fecha_emision":fecha_emision,
+                        "datos":serializer_asignaturas_cursadas,
+                        "otros_datos":otros_datos
+                        })
+def estadisticas_materias_aprobadas(ci_estudiante):
+    # Filtrar las asignaturas cursadas que tienen una nota final aprobada
+    asignaturas_aprobadas = AsignaturaCursada.objects.filter(
+    id_nota__resultado_gestion_espaniol='APROBADO',
+    ci_estudiante=ci_estudiante
+    )
+    # Obtener la cantidad de asignaturas aprobadas
+    cantidad_aprobadas = asignaturas_aprobadas.count()
+
+    # Obtener el promedio de las notas finales de las asignaturas aprobadas
+    promedio_aprobadas = asignaturas_aprobadas.aggregate(Avg('id_nota__nota_num_final'))['id_nota__nota_num_final__avg']
+    promedio_aprobadas_redondeado=round(promedio_aprobadas,2)
+
+    return {
+        'cantidad_aprobadas': cantidad_aprobadas,
+        'promedio_aprobadas': promedio_aprobadas_redondeado,
+
+    }
