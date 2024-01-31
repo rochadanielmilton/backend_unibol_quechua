@@ -81,7 +81,6 @@ def ObtenerHitorialAcademico(request,ci_estudiante):
 def estadisticas_materias(ci_estudiante):
     # Filtrar las asignaturas cursadas que tienen una nota final aprobada
     asignaturas_aprobadas = AsignaturaCursada.objects.filter(
-    id_nota__resultado_gestion_espaniol='APROBADO',
     ci_estudiante=ci_estudiante
     )
     # Obtener la cantidad de asignaturas aprobadas
