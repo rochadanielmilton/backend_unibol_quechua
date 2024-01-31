@@ -11,10 +11,14 @@ router.register(r'responsableEstudiante',ResponsableEstudianteView, basename='re
 router.register(r'educacionPrimaria',EducacionPrimariaView, basename='educacionPrimaria')
 router.register(r'asignaturaCursada',AsignaturaCursadaView, basename='asignaturaEstudiante')
 router.register(r'notaEstudiante',NotaEstudianteView, basename='notaEstudiante')
-router.register(r'mallaAcademica',MallaAcademicaView,basename='mallaAcademica')
+
 
 
 urlpatterns = [
     path('',include(router.urls)),
-    path('obtenerAsignaturas/<int:ci_estudiante>/', views.ObenerAsignaturasNoCursadas, name='obtenerAsignaturas'),
+    path('obtenerAsignaturasNoCursadas/<int:ci_estudiante>/', views.ObenerAsignaturasNoCursadas, name='obtenerAsignaturasNoCursadas'),
+    path('obtenerAsignaturasCursadas/<int:ci_estudiante>/', views.ObtenerHitorialAcademico, name='obtenerAsignaturasCursadas'),
+    #path('actualizarNotas/', views.ActualizarNotas, name='actualizarNotas'),
+    
+    
 ]

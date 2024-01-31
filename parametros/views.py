@@ -6,6 +6,9 @@ from .models import *
 from .serializers import *
 from datetime import datetime
 
+class MallaAcademicaView(viewsets.ModelViewSet):
+    queryset=MallaAcademica.objects.all()
+    serializer_class=MallaAcademicaSerializer
 class AsignaturaView(viewsets.ModelViewSet):
     queryset=Asignatura.objects.all()
     serializer_class=AsignaturaSerializer

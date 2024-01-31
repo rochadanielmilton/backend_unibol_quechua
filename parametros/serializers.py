@@ -40,3 +40,15 @@ class AsignaturaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Asignatura
         fields = '__all__'
+class MallaAcademicaSerializer(serializers.ModelSerializer):
+    nombre_carrera=serializers.SerializerMethodField()
+    nombre_asignatura=serializers.SerializerMethodField()
+    class Meta:
+        model = MallaAcademica
+        fields = '__all__'
+    def get_nombre_carrera(self,malla):
+        carrera=malla.codigo_carrera
+        return carrera.nombre_carrera if carrera else None
+    def get_nombre_asignatura(self,malla):
+         asignatura = malla.codigo_asignatura
+         return asignatura.nombre_asignatura if asignatura else None

@@ -44,14 +44,15 @@ class AsignaturaCursada(models.Model):
     fecha_inscripcion = models.DateTimeField(blank=True, null=True)
     estado_inscripcion = models.CharField(max_length=30, blank=True, null=True, db_comment='si/concluido')
     observacion = models.CharField(max_length=255, blank=True, null=True)
-    created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
-    modified = models.DateTimeField(auto_now=True, blank=True, null=True)
-    estado_gestion_espaniol = models.CharField(max_length=50, blank=True, null=True, db_comment='aprobado/repro/cursando/abandonado')
-
+    created = models.DateTimeField(blank=True, null=True)
+    modified = models.DateTimeField(blank=True, null=True)
+    estado_gestion_espaniol = models.CharField(max_length=50, blank=True, null=True, db_comment='aprobado/reprovado/abandono')
+    id_nota = models.ForeignKey('NotaEstudiante', models.DO_NOTHING, db_column='id_nota', blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'asignatura_cursada'
+
 
 
 class AuthGroup(models.Model):
@@ -198,8 +199,8 @@ class Docente(models.Model):
     nombres = models.CharField(max_length=100, blank=True, null=True)
     apellidop = models.CharField(db_column='apellidoP', max_length=50, blank=True, null=True)  # Field name made lowercase.
     apellidom = models.CharField(db_column='apellidoM', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    ci = models.SmallIntegerField(blank=True, null=True)
-    celular = models.SmallIntegerField(blank=True, null=True)
+    ci = models.IntegerField(blank=True, null=True)
+    celular = models.IntegerField(blank=True, null=True)
     direccion = models.CharField(max_length=255, blank=True, null=True)
     profesion = models.CharField(max_length=100, blank=True, null=True)
     estado = models.CharField(max_length=30, blank=True, null=True)
@@ -343,7 +344,7 @@ class Municipio(models.Model):
 
 class NotaEstudiante(models.Model):
     id = models.SmallAutoField(primary_key=True)
-    id_asignatura_cursada = models.ForeignKey(AsignaturaCursada, models.DO_NOTHING, db_column='id_asignatura_cursada', blank=True, null=True)
+    id_asignatura_cursada = models.SmallIntegerField(blank=True, null=True)
     nota_num_gestion = models.SmallIntegerField(blank=True, null=True)
     instancia = models.CharField(max_length=20, blank=True, null=True, db_comment='si/no')
     nota_num_instancia = models.SmallIntegerField(blank=True, null=True)
@@ -354,10 +355,9 @@ class NotaEstudiante(models.Model):
     resultado_gestion = models.CharField(max_length=30, blank=True, null=True, db_comment='TUKUCHIN/QUEPAKUN')
     gestion_cursada = models.CharField(max_length=20, blank=True, null=True)
     observacion = models.CharField(max_length=255, blank=True, null=True)
-    created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
-    modified = models.DateTimeField(auto_now=True, blank=True, null=True)
-    nivel_carrera=models.CharField(max_length=20, blank=True,null=True)
-
+    created = models.DateTimeField(blank=True, null=True)
+    modified = models.DateTimeField(blank=True, null=True)
+    nivel_carrera = models.CharField(max_length=20, blank=True, null=True, db_comment='TS=tecnico superiror LC=licenciatura')
 
     class Meta:
         managed = False
@@ -411,8 +411,8 @@ class ResponsableEstudiante(models.Model):
     nombre = models.CharField(max_length=100, blank=True, null=True)
     apellidop = models.CharField(db_column='apellidoP', max_length=100, blank=True, null=True)  # Field name made lowercase.
     apellidom = models.CharField(db_column='apellidoM', max_length=100, blank=True, null=True)  # Field name made lowercase.
-    ci = models.SmallIntegerField(blank=True, null=True)
-    celular = models.SmallIntegerField(blank=True, null=True)
+    ci = models.IntegerField(blank=True, null=True)
+    celular = models.IntegerField(blank=True, null=True)
     ocupacion = models.CharField(max_length=255, blank=True, null=True)
     idioma = models.CharField(max_length=50, blank=True, null=True)
     relacion_responsable = models.CharField(max_length=50, blank=True, null=True)
@@ -503,3 +503,10 @@ class NotaEstudiante2(models.Model):
     class Meta:
         managed = False
         db_table = 'nota_estudiante2'
+
+class AsignaturasLicenciatura(models.Model):
+    codigo_asignatura = models.CharField(max_length=30, blank=True, null=True, db_comment='asignaturas de licenciatura')
+
+    class Meta:
+        managed = False
+        db_table = 'asignaturas_licenciatura'
