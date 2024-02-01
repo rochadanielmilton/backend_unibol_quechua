@@ -14,7 +14,7 @@ class MunicipioSerializer(serializers.ModelSerializer):
 class ProvinciaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Provincia
-        fields = '__all__'
+        fields = ('id','nombre_provincia','id_departamento')
 
 class DepartamentoSerializer(serializers.ModelSerializer):
     class Meta:

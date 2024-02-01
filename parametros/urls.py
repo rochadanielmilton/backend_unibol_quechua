@@ -16,6 +16,8 @@ router.register(r'mallaAcademica',MallaAcademicaView,basename='mallaAcademica')
 urlpatterns = [
     path('', include(router.urls)),
     path('actualizar', views.actualizar_tablas, name='actualizar'),
+    path('obtenerProvincias/<int:id_departamento>/', views.ObtenerProvincias, name='obtenerProvincias'),
+    
 
     
 ]
