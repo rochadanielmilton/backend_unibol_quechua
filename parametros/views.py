@@ -164,8 +164,8 @@ def actualizar_tablas(request):
      return Response({"respuesta":"Respuesta exitosa "})
 
 @api_view(['GET']) 
-def ObtenerProvincias(request,id_departamento):
-    lista_provincias=Provincia.objects.filter(id_departamento=id_departamento)
+def ObtenerProvincias(request,nombre_departamento):
+    lista_provincias=Provincia.objects.filter(id_departamento__nombre_departamento=nombre_departamento)
     serializer_lista_provincias=ProvinciaSerializer(lista_provincias,many=True).data
     return Response(serializer_lista_provincias)
 
