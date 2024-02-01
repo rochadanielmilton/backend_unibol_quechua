@@ -8,7 +8,8 @@ class EstudianteSerializer(serializers.ModelSerializer):
         fields = '__all__'
     def get_nombre_carrera(self, estudiante):
         carrera=estudiante.codigo_carrera
-        return carrera.nombre_carrera if carrera else None
+        return carrera.nombre_carrera if carrera else None    
+    
 
 class DocumentacionEstudianteSerializer(serializers.ModelSerializer):
     class Meta:
@@ -88,3 +89,4 @@ class MallaAcademicaSerializer(serializers.ModelSerializer):
     def get_nombre_asignatura(self,malla):
          asignatura = malla.codigo_asignatura
          return asignatura.nombre_asignatura if asignatura else None
+

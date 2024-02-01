@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from datetime import datetime
 from django.db.models import Avg, Count, F
+from rest_framework import status
 
 class AsignaturaView(viewsets.ModelViewSet):
     queryset=Asignatura.objects.all()
@@ -39,22 +40,6 @@ class NotaEstudianteView(viewsets.ModelViewSet):
     queryset=NotaEstudiante.objects.all()
     serializer_class=NotaEstudianteSerializer
     
-@api_view(['GET']) 
-def ObenerAsignaturasNoCursadas(request,ci_estudiante):
-    estudiante=Estudiante.objects.filter(ci_estudiante=ci_estudiante).first()
-    asignaturas_cursadas = AsignaturaCursada.objects.filter(ci_estudiante=estudiante.ci_estudiante)
-    lista_asignaturas_aprobadas = []
-
-    for asig in asignaturas_cursadas:        
-        concluido = asig.estado_gestion_espaniol
-        if concluido == 'APROBADO':
-            lista_asignaturas_aprobadas.append(asig.id_malla_academica.codigo_asignatura.codigo_asignatura)
-
-    malla_estudiante=MallaAcademica.objects.filter(codigo_carrera=estudiante.codigo_carrera).exclude(codigo_asignatura__in=lista_asignaturas_aprobadas)
-    print("WWWWWWWWWWWW",malla_estudiante)
-    serializer_malla=MallaAcademicaSerializer(malla_estudiante,many=True).data
-
-    return Response(serializer_malla)
 
 
 @api_view(['GET'])

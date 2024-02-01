@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'parametros',
     'estudiantes',
     'docentes',
+    'administracion',
 ]
 
 MIDDLEWARE = [
