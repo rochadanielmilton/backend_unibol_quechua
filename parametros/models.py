@@ -24,8 +24,8 @@ class Asignatura(models.Model):
     pre_requisito1 = models.CharField(max_length=100, blank=True, null=True)
     pre_requisito2 = models.CharField(max_length=100, blank=True, null=True)
     anio_asignado = models.CharField(max_length=20, blank=True, null=True, db_comment='el anio al que pertenece la materia')
-    created = models.DateTimeField(blank=True, null=True)
-    modified = models.DateTimeField(blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    modified = models.DateTimeField(auto_now=True, blank=True, null=True)
     carrera_codigo = models.CharField(max_length=30, blank=True, null=True)
 
     class Meta:
@@ -44,8 +44,8 @@ class AsignaturaCursada(models.Model):
     fecha_inscripcion = models.DateTimeField(blank=True, null=True)
     estado_inscripcion = models.CharField(max_length=30, blank=True, null=True, db_comment='si/concluido')
     observacion = models.CharField(max_length=255, blank=True, null=True)
-    created = models.DateTimeField(blank=True, null=True)
-    modified = models.DateTimeField(blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    modified = models.DateTimeField(auto_now=True, blank=True, null=True)
     estado_gestion_espaniol = models.CharField(max_length=50, blank=True, null=True, db_comment='aprobado/reprovado/abandono')
     id_nota = models.ForeignKey('NotaEstudiante', models.DO_NOTHING, db_column='id_nota', blank=True, null=True)
 
@@ -356,8 +356,8 @@ class NotaEstudiante(models.Model):
     resultado_gestion = models.CharField(max_length=30, blank=True, null=True, db_comment='TUKUCHIN/QUEPAKUN')
     gestion_cursada = models.CharField(max_length=20, blank=True, null=True)
     observacion = models.CharField(max_length=255, blank=True, null=True)
-    created = models.DateTimeField(blank=True, null=True)
-    modified = models.DateTimeField(blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    modified = models.DateTimeField(auto_now=True, blank=True, null=True)
     nivel_carrera = models.CharField(max_length=20, blank=True, null=True, db_comment='TS=tecnico superiror LC=licenciatura')
 
     class Meta:
