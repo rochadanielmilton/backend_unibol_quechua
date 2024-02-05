@@ -511,3 +511,15 @@ class AsignaturasLicenciatura(models.Model):
     class Meta:
         managed = False
         db_table = 'asignaturas_licenciatura'
+
+class BoletaInscripcion(models.Model):
+    numero_boleta = models.SmallIntegerField(blank=True, null=True)
+    ci_estudiante = models.IntegerField(blank=True, null=True)
+    gestion = models.CharField(max_length=20, blank=True, null=True, db_comment='//anio de inscripcion')
+    emitido = models.CharField(max_length=10, blank=True, null=True, db_comment='// si fue emitido si/no')
+    created = models.DateTimeField(blank=True, null=True)
+    modified = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'boleta_inscripcion'

@@ -55,7 +55,7 @@ def inscribirEstudiante(request):
             ids_mallas = data.get('ids_mallas')
 
             estudiante = Estudiante.objects.get(ci_estudiante=ci_estudiante)
-            datos={}
+            fecha_emision=datetime.now().date()
             
 
             if estudiante:
@@ -92,10 +92,13 @@ def inscribirEstudiante(request):
                     asignaturas_malla=MallaAcademica.objects.filter(id__in=ids_mallas)
                     asignaturas_malla_serializer=MallaAcademicaInscripcionSerializer(asignaturas_malla,many=True).data
                     estudiante_serializer=EstudianteInscripcionSerializer(estudiante).data
+                    numero_boleta=GenerarNuevaBoleta(estudiante.ci_estudiante)
                 else:
                     return Response({"message":"El estudiante ya esta inscrito"})
                 return Response({"estudiante": estudiante_serializer,
-                                 "asignaturas_inscritas":asignaturas_malla_serializer})
+                                 "asignaturas_inscritas":asignaturas_malla_serializer,
+                                 "fecha_emision":fecha_emision,
+                                 "numero_boleta":numero_boleta,})
             else:
                 return Response({"message": "El estudiante no se encuentra registrado"})
     except Exception as e:
@@ -114,6 +117,18 @@ def VerificarGrado(ci_estudiante):
             break  # Termina la iteración tan pronto como se encuentra una coincidencia
 
     return resultado
+
+
+def GenerarNuevaBoleta(ci_estudiante):
+    ultimo_numero=BoletaInscripcion.objects.last()
+    if ultimo_numero:
+        nuevo_numero_boleta=ultimo_numero.numero_boleta+1
+    else:
+        nuevo_numero_boleta=1
+    gestion=datetime.now().year
+    nuevo_numero_boleta_str = str(nuevo_numero_boleta).zfill(4)
+    BoletaInscripcion.objects.create(numero_boleta=nuevo_numero_boleta,ci_estudiante=ci_estudiante,gestion=gestion,emitido='si')
+    return nuevo_numero_boleta_str
 # @api_view(['POST'])
 # def Recibir_Datos(request):
 #     data = request.data
