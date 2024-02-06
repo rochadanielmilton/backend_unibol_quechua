@@ -13,7 +13,7 @@ class AsignaturaView(viewsets.ModelViewSet):
     serializer_class=AsignaturaSerializer
 
 class EstudianteView(viewsets.ModelViewSet):
-    queryset = Estudiante.objects.all()    
+    queryset = Estudiante.objects.filter(estado='habilitado',baja='no').order_by('anio_ingreso')   
     serializer_class = EstudianteSerializer
 
 class DocumentacionEstudianteView(viewsets.ModelViewSet):
