@@ -227,7 +227,7 @@ class DocumentacionEstudiante(models.Model):
     formulario_ministerio = models.CharField(max_length=10, blank=True, null=True)
     libreta_servicio_militar = models.CharField(max_length=10, blank=True, null=True)
     boleta_pago = models.CharField(max_length=10, blank=True, null=True)
-    observacion = models.CharField(max_length=10, blank=True, null=True)
+    observacion = models.CharField(max_length=255, blank=True, null=True)
     no_pertenece_unibol = models.CharField(max_length=10, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     modified = models.DateTimeField(auto_now=True, blank=True, null=True)
@@ -291,7 +291,7 @@ class Estudiante(models.Model):
     baja = models.CharField(max_length=20, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     modified = models.DateTimeField(auto_now=True, blank=True, null=True)
-    numero_registro=models.IntegerField()
+    numero_registro=models.CharField(max_length=30,blank=True,null=True)
     anio_cursado=models.CharField(max_length=100, blank=True, null=True, db_comment='//anio cursando')
     obs1 = models.TextField(blank=True, null=True)
     obs2 = models.TextField(blank=True, null=True)
@@ -410,10 +410,10 @@ class ResponsableEstudiante(models.Model):
     id = models.SmallAutoField(primary_key=True)
     ci_estudiante = models.ForeignKey(Estudiante, models.DO_NOTHING, db_column='ci_estudiante', blank=True, null=True)
     nombre = models.CharField(max_length=100, blank=True, null=True)
-    apellidop = models.CharField(db_column='apellidoP', max_length=100, blank=True, null=True)  # Field name made lowercase.
-    apellidom = models.CharField(db_column='apellidoM', max_length=100, blank=True, null=True)  # Field name made lowercase.
-    ci = models.IntegerField(blank=True, null=True)
-    celular = models.IntegerField(blank=True, null=True)
+    apellidoP = models.CharField(db_column='apellidoP', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    apellidoM = models.CharField(db_column='apellidoM', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    ci = models.CharField(max_length=30,blank=True, null=True)
+    celular = models.CharField(max_length=30,blank=True, null=True)
     ocupacion = models.CharField(max_length=255, blank=True, null=True)
     idioma = models.CharField(max_length=50, blank=True, null=True)
     relacion_responsable = models.CharField(max_length=50, blank=True, null=True)
@@ -523,3 +523,134 @@ class BoletaInscripcion(models.Model):
     class Meta:
         managed = False
         db_table = 'boleta_inscripcion'
+
+#===================================MODELOS DE PREPARATORIA=======================================
+        
+class PostulantePrepa(models.Model):
+    id_postulante = models.AutoField(primary_key=True)
+    ci_postulante = models.IntegerField()
+    extension_ci = models.TextField(blank=True, null=True)
+    gestion_admision = models.TextField(blank=True, null=True)
+    gestion_aprobacion = models.TextField(blank=True, null=True)
+    apellido_paterno_p = models.TextField(blank=True, null=True)
+    apellido_materno_p = models.TextField(blank=True, null=True)
+    nombres_p = models.TextField(blank=True, null=True)
+    genero = models.CharField(max_length=1, blank=True, null=True)
+    estadocivil = models.CharField(max_length=20)
+    lengua_que_habla = models.CharField(max_length=100, blank=True, null=True)
+    fecha_nacimiento = models.DateField(blank=True, null=True)
+    tipo_ingreso = models.CharField(max_length=30, blank=True, null=True)
+    departamento_apoyo = models.CharField(max_length=255, blank=True, null=True)
+    provincia_apoyo = models.CharField(max_length=255, blank=True, null=True)
+    municipio_apoyo = models.CharField(max_length=50, blank=True, null=True)
+    comunidad_apoyo = models.CharField(max_length=200)
+    organizacion_matriz = models.CharField(max_length=50, blank=True, null=True)
+    organizacion_departamental = models.CharField(max_length=250)
+    organizacion_regional = models.CharField(max_length=150, blank=True, null=True)
+    organizacion_provincial = models.CharField(max_length=200)
+    organizacion_comunidad = models.CharField(max_length=200)
+    telefono_postulante = models.CharField(max_length=30, blank=True, null=True)
+    email_postulante = models.CharField(max_length=30, blank=True, null=True)
+    telefono_postulante_apoderado = models.CharField(max_length=30, blank=True, null=True)
+    estado = models.CharField(max_length=10, blank=True, null=True)
+    estado_calificacion = models.CharField(max_length=10, blank=True, null=True)
+    nota_final = models.IntegerField()
+    estado_confirmacion = models.CharField(max_length=10, blank=True, null=True)
+    id_estudiante = models.IntegerField(blank=True, null=True)
+    observacion = models.TextField(blank=True, null=True)
+    fecha_registro = models.DateField()
+    carrera = models.TextField()
+    condicion_laboral = models.CharField(max_length=150)
+    nacionalidad = models.CharField(max_length=50)
+    numeroinscripcion = models.IntegerField()
+    cite_aprobacion = models.IntegerField()
+    departamento_procedencia = models.CharField(max_length=255)
+    estado_postulante = models.CharField(max_length=20)
+    grupo_curso = models.CharField(max_length=10)
+    estado_ingreso = models.CharField(max_length=100)
+    inscripcion_2023 = models.CharField(max_length=255)
+    pais_nacimiento = models.CharField(max_length=50)
+    departamento_nacimiento = models.CharField(max_length=200)
+    provincia_nacimiento = models.CharField(max_length=255)
+    municipio_nacimiento = models.CharField(max_length=255)
+    comunidad_nacimiento = models.CharField(max_length=250)
+    registrado=models.CharField(max_length=10,blank=True,null=True)
+    anio_postulacion=models.CharField(max_length=10,blank=True,null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'postulante_prepa'
+
+
+class PostulantePrepaApoderado(models.Model):
+    id_postulante = models.IntegerField(primary_key=True)
+    ci_postulante = models.IntegerField()
+    parentesco1 = models.CharField(max_length=20)
+    ci_apo1 = models.CharField(max_length=20)
+    ape_apo1 = models.CharField(max_length=50, blank=True, null=True)
+    nom_apo1 = models.CharField(max_length=50, blank=True, null=True)
+    idioma_apo1 = models.CharField(max_length=50, blank=True, null=True)
+    ocupacion_apo1 = models.CharField(max_length=50, blank=True, null=True)
+    telefono_apo1 = models.CharField(max_length=50)
+    parentesco2 = models.CharField(max_length=20)
+    ci_apo2 = models.CharField(max_length=20)
+    ape_apo2 = models.CharField(max_length=50, blank=True, null=True)
+    nom_apo2 = models.CharField(max_length=50, blank=True, null=True)
+    idioma_apo2 = models.CharField(max_length=50, blank=True, null=True)
+    ocupacion_apo2 = models.CharField(max_length=50, blank=True, null=True)
+    telefono_apo2 = models.CharField(max_length=50, blank=True, null=True)
+    idconfirmado = models.CharField(max_length=100, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'postulante_prepa_apoderado'
+
+
+class PostulantePrepaDatosAcademicos(models.Model):
+    id_postulante = models.IntegerField(primary_key=True)
+    ci_postulante = models.IntegerField()
+    unidad_educativa = models.CharField(max_length=50, blank=True, null=True)
+    gestion_egreso = models.CharField(max_length=10, blank=True, null=True)
+    tipo_unidad_educativa = models.CharField(max_length=12, blank=True, null=True)
+    departamento = models.CharField(max_length=200, blank=True, null=True)
+    provincia = models.CharField(max_length=200, blank=True, null=True)
+    municipio = models.CharField(max_length=50, blank=True, null=True)
+    observacion = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'postulante_prepa_datos_academicos'
+
+
+class PostulantePrepaDocumentacion(models.Model):
+    numero = models.AutoField(primary_key=True)
+    id_postulante = models.IntegerField()
+    ci_postulante = models.IntegerField()
+    carta_postulacion = models.CharField(max_length=2, blank=True, null=True)
+    fotocopia_diploma = models.CharField(max_length=2, blank=True, null=True)
+    fotocopia_ci = models.CharField(max_length=2, blank=True, null=True)
+    certificado_nacimiento = models.CharField(max_length=2, blank=True, null=True)
+    fotografias = models.CharField(max_length=2, blank=True, null=True)
+    fotocopias_apoderados = models.CharField(max_length=2, blank=True, null=True)
+    carta_auspicio = models.CharField(max_length=2, blank=True, null=True)
+    carta_compromiso = models.CharField(max_length=2, blank=True, null=True)
+    certificacion_pertenencia = models.CharField(max_length=2, blank=True, null=True)
+    certificacion_idioma = models.CharField(max_length=2, blank=True, null=True)
+    formulario_ministerio = models.CharField(max_length=2, blank=True, null=True)
+    libreta_servicio_militar = models.CharField(max_length=2, blank=True, null=True)
+    observacion = models.CharField(max_length=255)
+    boleta_pago = models.CharField(max_length=2)
+    no_pertenece_unibol = models.CharField(max_length=2)
+
+    class Meta:
+        managed = False
+        db_table = 'postulante_prepa_documentacion'
+
+class ControlNumeroRegistro(models.Model):
+    numero_registro = models.SmallIntegerField(blank=True, null=True)
+    ci_estudiante = models.IntegerField(blank=True, null=True)
+    gestion = models.CharField(max_length=20, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'control_numero_registro'
