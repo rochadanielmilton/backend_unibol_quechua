@@ -28,6 +28,7 @@ def ObtenerEstudiantesInscripcion(request):
 @api_view(['GET']) 
 def ObenerAsignaturasNoCursadas(request,ci_estudiante):
     estudiante=Estudiante.objects.filter(ci_estudiante=ci_estudiante).first()
+    
     if estudiante:
         asignaturas_cursadas = AsignaturaCursada.objects.filter(ci_estudiante=estudiante.ci_estudiante)
         lista_asignaturas_aprobadas = []
@@ -38,7 +39,7 @@ def ObenerAsignaturasNoCursadas(request,ci_estudiante):
                 lista_asignaturas_aprobadas.append(asig.id_malla_academica.codigo_asignatura.codigo_asignatura)
 
         malla_estudiante=MallaAcademica.objects.filter(codigo_carrera=estudiante.codigo_carrera).exclude(codigo_asignatura__in=lista_asignaturas_aprobadas)
-        print("WWWWWWWWWWWW",malla_estudiante)
+        #print("WWWWWWWWWWWW",malla_estudiante)
         serializer_malla=MallaAcademicaInscripcionSerializer(malla_estudiante,many=True).data
         serializer_estudiante=EstudianteInscripcionSerializer(estudiante).data
         return Response({"estudiante":serializer_estudiante,"oferta_materias":serializer_malla})
@@ -240,3 +241,61 @@ def EliminarDatos(request,ci_estudiante):
     ResponsableEstudiante.objects.filter(ci_estudiante=ci_estudiante).delete()
     Estudiante.objects.filter(ci_estudiante=ci_estudiante).delete()
     return Response({"message":"los datos se eliminarion correctamente"},status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def InscribirEstudiantePrimerAnio(request,ci_estudiante):
+    try:
+        estudiante=Estudiante.objects.get(ci_estudiante=ci_estudiante)
+        ultimo_año=str(datetime.now().year)
+        if estudiante.anio_ingreso==ultimo_año:
+            if estudiante.codigo_carrera=='AGRF': 
+               print("---------------AGRF--------------")              
+               #return Response(RegistrarMateriasPrimerAnio(estudiante,[35,36,37,38,39,40,41,42]))
+               return Response({"message":"el estudiante no pertenece a ninguna carrera"})            
+            if estudiante.codigo_carrera=='TIAL':
+                print("---------------TIAL--------------")   
+                #return Response({RegistrarMateriasPrimerAnio(estudiante,[69,70,71,72,73,74,75,76])})
+                return Response({"message":"el estudiante no pertenece a ninguna carrera"})
+            if estudiante.codigo_carrera=='ECOP':
+                print("---------------ECOP--------------")   
+                #return Response(RegistrarMateriasPrimerAnio(estudiante,[1,2,3,4,5,6,7,8]))
+                return Response({"message":"el estudiante no pertenece a ninguna carrera"})
+            if estudiante.codigo_carrera=='ACUC':
+                print("---------------ACUC--------------")   
+                #return Response(RegistrarMateriasPrimerAnio(estudiante,[103,104,105,106,107,108,109,110]))
+                return Response({"message":"el estudiante no pertenece a ninguna carrera"})
+        else:
+            return Response({"message":"el estudiante no pertenece a ninguna carrera"})
+    except:
+        return Response({"message":"no existe el estudiante"})
+
+def RegistrarMateriasPrimerAnio(estudiante,lista_asignaturas_malla):
+    for asignatura_malla in lista_asignaturas_malla:
+        nueva_asignatura_cursada = AsignaturaCursada.objects.create(
+            ci_estudiante=estudiante,
+            codigo_asignatura=MallaAcademica.objects.filter(id=asignatura_malla).first().codigo_asignatura.codigo_asignatura,
+            id_malla_academica=MallaAcademica.objects.filter(id=asignatura_malla).first(),
+            anio_cursado=datetime.now().year,
+            estado_gestion_quechua='QHIPAKUN',
+            estado_gestion_espaniol='ABANDONO',
+            fecha_inscripcion=datetime.now(),
+            estado_inscripcion='inscrito'
+            )
+        nueva_nota=NotaEstudiante.objects.create(
+            id_asignatura_cursada=nueva_asignatura_cursada.id,
+            nota_num_gestion=0,
+            instancia='no',
+            nota_num_final=0,
+            resultado_gestion_espaniol='ABANDONO',
+            nota_literal_quechua="CH'USAQ",
+            resultado_gestion='QHIPAKUN',
+            gestion_cursada=datetime.now().year,
+            nivel_carrera=VerificarGrado(estudiante.ci_estudiante)
+            )                     
+
+        if nueva_nota:
+            nueva_asignatura_cursada.id_nota=nueva_nota
+            nueva_asignatura_cursada.save()
+    mensage="Registro exitoso"
+    return mensage
