@@ -45,5 +45,5 @@ class MallaAcademicaInscripcionSerializer(serializers.ModelSerializer):
 class PostulantePrepaSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostulantePrepa
-        fields =('ci_postulante','nombres_p','apellido_paterno_p','apellido_materno_p','anio_postulacion','nota_final','estado_ingreso')
+        fields =('ci_postulante','nombres_p','apellido_paterno_p','apellido_materno_p','anio_postulacion','nota_final','estado_ingreso','registrado')
    

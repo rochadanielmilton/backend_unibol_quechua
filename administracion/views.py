@@ -133,7 +133,7 @@ def GenerarNuevaBoleta(ci_estudiante):
 #=======FUNCIONES PARA LA MIGRACION DE REGISTROS DE POSTALTE A ESTUDIANTES REGULARES====================
 @api_view(['GET']) 
 def ObtenerPostulates(request):
-    postulantes=PostulantePrepa.objects.filter(registrado='no')
+    postulantes=PostulantePrepa.objects.all()
     postulante_serializer=PostulantePrepaSerializer(postulantes,many=True).data
     if postulantes:
         return Response(postulante_serializer,status=status.HTTP_200_OK)       
@@ -162,6 +162,8 @@ def RegistrarNueboEstudiante(request,ci_postulante):
                                                    numero_registro=numero_registro,anio_cursado='PRIMER AÑO',inscrito_gestion='no')
         if nuevo_estudiante:                                           
             respuesta['Estudiante']='Se registro los datos del estudiante correctamente'
+            postulante.registrado='si'
+            postulante.save()
     #--------------------------registro de la organizacion social------------------
         nueva_organizacion=Organizacion.objects.create(ci_estudiante=nuevo_estudiante, organizacion_matriz=postulante.organizacion_matriz,
                                                        organizacion_departamental=postulante.organizacion_departamental,organizacion_regional=postulante.organizacion_regional,
@@ -246,29 +248,35 @@ def EliminarDatos(request,ci_estudiante):
 @api_view(['GET'])
 def InscribirEstudiantePrimerAnio(request,ci_estudiante):
     try:
-        estudiante=Estudiante.objects.get(ci_estudiante=ci_estudiante)
+        estudiante=Estudiante.objects.get(ci_estudiante=ci_estudiante)        
         ultimo_año=str(datetime.now().year)
-        if estudiante.anio_ingreso==ultimo_año:
-            if estudiante.codigo_carrera=='AGRF': 
-               print("---------------AGRF--------------")              
-               #return Response(RegistrarMateriasPrimerAnio(estudiante,[35,36,37,38,39,40,41,42]))
-               return Response({"message":"el estudiante no pertenece a ninguna carrera"})            
-            if estudiante.codigo_carrera=='TIAL':
-                print("---------------TIAL--------------")   
-                #return Response({RegistrarMateriasPrimerAnio(estudiante,[69,70,71,72,73,74,75,76])})
-                return Response({"message":"el estudiante no pertenece a ninguna carrera"})
-            if estudiante.codigo_carrera=='ECOP':
-                print("---------------ECOP--------------")   
-                #return Response(RegistrarMateriasPrimerAnio(estudiante,[1,2,3,4,5,6,7,8]))
-                return Response({"message":"el estudiante no pertenece a ninguna carrera"})
-            if estudiante.codigo_carrera=='ACUC':
-                print("---------------ACUC--------------")   
-                #return Response(RegistrarMateriasPrimerAnio(estudiante,[103,104,105,106,107,108,109,110]))
-                return Response({"message":"el estudiante no pertenece a ninguna carrera"})
+        if estudiante.anio_ingreso==ultimo_año and estudiante.inscrito_gestion=='no':
+            if estudiante.codigo_carrera.codigo_carrera=='AGRF': 
+               lista_asignaturas_malla=[35,36,37,38,39,40,41,42]            
+               return RegistrarMateriasPrimerAnio(estudiante,lista_asignaturas_malla)              
+            
+            if estudiante.codigo_carrera.codigo_carrera=='TIAL':
+               lista_asignaturas_malla=[69,70,71,72,73,74,75,76]            
+               return RegistrarMateriasPrimerAnio(estudiante,lista_asignaturas_malla)                             
+
+            if estudiante.codigo_carrera.codigo_carrera=='ECOP':
+               lista_asignaturas_malla=[1,2,3,4,5,6,7,8]            
+               return RegistrarMateriasPrimerAnio(estudiante,lista_asignaturas_malla)               
+
+
+            if estudiante.codigo_carrera.codigo_carrera=='ACUC':
+               lista_asignaturas_malla=[103,104,105,106,107,108,109,110]            
+               return RegistrarMateriasPrimerAnio(estudiante,lista_asignaturas_malla)                               
+
         else:
-            return Response({"message":"el estudiante no pertenece a ninguna carrera"})
+            return Response({"message":"el estudiante no se encuentra en el primer año o ya esta inscrito"})
     except:
         return Response({"message":"no existe el estudiante"})
+    
+    # return Response({"estudiante": estudiante_serializer,
+    #                              "asignaturas_inscritas":asignaturas_malla_serializer,
+    #                              "fecha_emision":fecha_emision,
+    #                              "numero_boleta":numero_boleta,})
 
 def RegistrarMateriasPrimerAnio(estudiante,lista_asignaturas_malla):
     for asignatura_malla in lista_asignaturas_malla:
@@ -294,8 +302,19 @@ def RegistrarMateriasPrimerAnio(estudiante,lista_asignaturas_malla):
             nivel_carrera=VerificarGrado(estudiante.ci_estudiante)
             )                     
 
-        if nueva_nota:
+        if nueva_asignatura_cursada and nueva_nota:
             nueva_asignatura_cursada.id_nota=nueva_nota
             nueva_asignatura_cursada.save()
-    mensage="Registro exitoso"
-    return mensage
+        else:
+            return Response({"message":"Hubo un error al intentar registrar materias consulte con soporte"})
+    lista_asignaturas=MallaAcademica.objects.filter(id__in=lista_asignaturas_malla)
+    asignaturas_malla_serializer=MallaAcademicaInscripcionSerializer(lista_asignaturas,many=True).data
+    numero_boleta=GenerarNuevaBoleta(estudiante.ci_estudiante)
+    estudiante.inscrito_gestion='si'
+    estudiante.save()
+    estudiante_serializer=EstudianteInscripcionSerializer(estudiante).data
+    fecha_emision=datetime.now().date()
+    return Response({"estudiante": estudiante_serializer,
+                                 "asignaturas_inscritas":asignaturas_malla_serializer,
+                                 "fecha_emision":fecha_emision,
+                                 "numero_boleta":numero_boleta,})
