@@ -135,7 +135,7 @@ def GenerarNuevaBoleta(ci_estudiante):
 #=======FUNCIONES PARA LA MIGRACION DE REGISTROS DE POSTALTE A ESTUDIANTES REGULARES====================
 @api_view(['GET']) 
 def ObtenerPostulates(request):
-    postulantes=PostulantePrepa.objects.all()
+    postulantes=PostulantePrepa.objects.all().order_by('registrado')
     postulante_serializer=PostulantePrepaSerializer(postulantes,many=True).data
     if postulantes:
         return Response(postulante_serializer,status=status.HTTP_200_OK)       
