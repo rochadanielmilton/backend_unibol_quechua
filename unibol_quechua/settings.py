@@ -87,7 +87,7 @@ DATABASES = {
     # }
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'db_unibol_quechua',
+        'NAME': 'db_unibol_quechua1',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
         'HOST': 'localhost',  # Puedes dejarlo como 'localhost' si estás ejecutando PostgreSQL en tu máquina local

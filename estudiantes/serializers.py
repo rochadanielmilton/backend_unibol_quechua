@@ -38,14 +38,33 @@ class AsignaturaCursadaSerializer(serializers.ModelSerializer):
     pre_requisitos=serializers.SerializerMethodField()
     class Meta:
         model = AsignaturaCursada
-        fields = ('ci_estudiante','codigo_asignatura','anio_cursado','estado_gestion_espaniol','nota_num_final','nombre_asignatura','total_horas','pre_requisitos')
+        fields = ('ci_estudiante','codigo_asignatura','convalidacion','homologacion','anio_cursado','estado_gestion_espaniol','nota_num_final','nombre_asignatura','total_horas','pre_requisitos')
 
     def get_nota_num_final(self, asignatura):
         nota =asignatura.id_nota
         return nota.nota_num_final if nota else None
     def get_nombre_asignatura(self, asignatura_cursada):
+        if asignatura_cursada.codigo_asignatura=='LCEC 404' and asignatura_cursada.anio_cursado=='2022':
+            asignatura_cursada.codigo_asignatura='LCEC 406'
+            asignatura_cursada.save()
+        if asignatura_cursada.codigo_asignatura=='LCEC 408'and asignatura_cursada.anio_cursado=='2022':
+            asignatura_cursada.codigo_asignatura='LCEC 402'
+            asignatura_cursada.save()
+            
         malla=asignatura_cursada.id_malla_academica
-        return malla.codigo_asignatura.nombre_asignatura if malla else None
+        if asignatura_cursada.malla_aplicada=='2018' and asignatura_cursada.homologacion=='NO':
+            return malla.codigo_asignatura.asignatura_malla_2018 if malla else None
+        elif asignatura_cursada.malla_aplicada=='2018' and asignatura_cursada.homologacion=='SI' and asignatura_cursada.convalidacion!='':
+            malla2018=MallaAcademica2018.objects.filter(codigo=asignatura_cursada.convalidacion).first()
+            return malla2018.asignatura if malla2018 else None
+        elif asignatura_cursada.malla_aplicada=='2018' and asignatura_cursada.homologacion=='SI' and asignatura_cursada.codigo_asignatura=='LCEC 402':
+                return 'MONITOREO Y EVALUACIÓN DEL SISTEMA PRODUCTIVO'
+        elif asignatura_cursada.malla_aplicada=='2018' and asignatura_cursada.homologacion=='SI' and asignatura_cursada.codigo_asignatura=='LCEC 406':
+                return 'MERCADEO Y COMERCIALIZACIÓN '
+        else:
+            return malla.codigo_asignatura.nombre_asignatura if malla else None
+ #MONITOREO Y EVALUACIÓN DEL SISTEMA PRODUCTIVO
+ #MERCADEO Y COMERCIALIZACIÓN                  
     def get_total_horas(self,asignatura_cursada):
         malla=asignatura_cursada.id_malla_academica
         return malla.codigo_asignatura.total_horas if malla else None

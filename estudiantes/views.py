@@ -53,7 +53,7 @@ def ObtenerHitorialAcademico(request,ci_estudiante):
                
        
         estudiante_serializer=EstudianteHistorialSerializer(estudiante.first()).data
-        asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante)
+        asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).order_by('codigo_asignatura')
         if asignaturas_cursadas:
             otros_datos= estadisticas_materias(ci_estudiante)
             serializer_asignaturas_cursadas=AsignaturaCursadaSerializer(asignaturas_cursadas, many=True).data

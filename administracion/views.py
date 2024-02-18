@@ -239,6 +239,7 @@ def ObtenerNumeroRegistro():
 
 @api_view(['DELETE']) 
 def EliminarDatos(request,ci_estudiante):
+    AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).delete()
     EducacionPrimaria.objects.filter(ci_estudiante=ci_estudiante).delete()
     DocumentacionEstudiante.objects.filter(ci_estudiante=ci_estudiante).delete()
     Organizacion.objects.filter(ci_estudiante=ci_estudiante).delete()

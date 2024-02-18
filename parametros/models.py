@@ -24,9 +24,12 @@ class Asignatura(models.Model):
     pre_requisito1 = models.CharField(max_length=100, blank=True, null=True)
     pre_requisito2 = models.CharField(max_length=100, blank=True, null=True)
     anio_asignado = models.CharField(max_length=20, blank=True, null=True, db_comment='el anio al que pertenece la materia')
-    created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
-    modified = models.DateTimeField(auto_now=True, blank=True, null=True)
+    created = models.DateTimeField(blank=True, null=True)
+    modified = models.DateTimeField(blank=True, null=True)
     carrera_codigo = models.CharField(max_length=30, blank=True, null=True)
+    asignatura_malla_2018 = models.CharField(max_length=150, blank=True, null=True, db_comment='asignaturas malla anterior')
+    tipo = models.CharField(max_length=10, blank=True, null=True)
+    detalle = models.CharField(max_length=10, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -34,7 +37,6 @@ class Asignatura(models.Model):
 
 
 class AsignaturaCursada(models.Model):
-    id = models.SmallAutoField(primary_key=True)
     ci_estudiante = models.ForeignKey('Estudiante', models.DO_NOTHING, db_column='ci_estudiante', blank=True, null=True)
     codigo_asignatura = models.CharField(max_length=50, blank=True, null=True)
     id_malla_academica = models.ForeignKey('MallaAcademica', models.DO_NOTHING, db_column='id_malla_academica', blank=True, null=True)
@@ -44,10 +46,16 @@ class AsignaturaCursada(models.Model):
     fecha_inscripcion = models.DateTimeField(blank=True, null=True)
     estado_inscripcion = models.CharField(max_length=30, blank=True, null=True, db_comment='si/concluido')
     observacion = models.CharField(max_length=255, blank=True, null=True)
-    created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
-    modified = models.DateTimeField(auto_now=True, blank=True, null=True)
+    created = models.DateTimeField(blank=True, null=True)
+    modified = models.DateTimeField(blank=True, null=True)
     estado_gestion_espaniol = models.CharField(max_length=50, blank=True, null=True, db_comment='aprobado/reprovado/abandono')
     id_nota = models.ForeignKey('NotaEstudiante', models.DO_NOTHING, db_column='id_nota', blank=True, null=True)
+    convalidacion = models.CharField(max_length=150, blank=True, null=True, db_comment='si fue convalidado')
+    malla_aplicada = models.CharField(max_length=150, blank=True, null=True)
+    homologacion = models.CharField(max_length=150, blank=True, null=True)
+    codigo_malla_ajustada = models.CharField(max_length=150, blank=True, null=True)
+    cod_carrera = models.CharField(max_length=50, blank=True, null=True)
+    instancia_aprobacion = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -330,6 +338,22 @@ class MallaAcademica(models.Model):
         managed = False
         db_table = 'malla_academica'
 
+class MallaAcademica2018(models.Model):
+    codigo = models.CharField(primary_key=True, max_length=20)
+    asignatura = models.CharField(max_length=255, blank=True, null=True)
+    horas_practicas = models.CharField(max_length=10, blank=True, null=True)
+    horas_teoricas = models.CharField(max_length=12, blank=True, null=True)
+    total_horas = models.CharField(max_length=12, blank=True, null=True)
+    prerequisito1 = models.CharField(max_length=255, blank=True, null=True)
+    prerequisito2 = models.CharField(max_length=255, blank=True, null=True)
+    gestion = models.CharField(max_length=50, blank=True, null=True)
+    cod_carrera = models.CharField(max_length=50, blank=True, null=True)
+    observacion = models.CharField(max_length=30, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'malla_academica_2018'
+
 
 class Municipio(models.Model):
     id = models.SmallAutoField(primary_key=True)
@@ -344,8 +368,7 @@ class Municipio(models.Model):
 
 
 class NotaEstudiante(models.Model):
-    id = models.SmallAutoField(primary_key=True)
-    id_asignatura_cursada = models.SmallIntegerField(blank=True, null=True)
+    id_asignatura_cursada = models.IntegerField(blank=True, null=True)
     nota_num_gestion = models.SmallIntegerField(blank=True, null=True)
     instancia = models.CharField(max_length=20, blank=True, null=True, db_comment='si/no')
     nota_num_instancia = models.SmallIntegerField(blank=True, null=True)
