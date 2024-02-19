@@ -37,7 +37,7 @@ def ObenerAsignaturasNoCursadas(request,ci_estudiante):
 
         for asig in asignaturas_cursadas:        
             concluido = asig.estado_gestion_espaniol
-            if concluido == 'APROBADO':
+            if concluido == 'APR.':
                 lista_asignaturas_aprobadas.append(asig.id_malla_academica.codigo_asignatura.codigo_asignatura)
 
         malla_estudiante=MallaAcademica.objects.filter(codigo_carrera=estudiante.codigo_carrera).exclude(codigo_asignatura__in=lista_asignaturas_aprobadas)

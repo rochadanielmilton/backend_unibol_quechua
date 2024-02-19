@@ -169,3 +169,11 @@ def actualizar_anio_cursado(ci_estudiante):
     asignaturas_aprobadas = AsignaturaCursada.objects.filter(
     ci_estudiante=ci_estudiante
     )
+
+@api_view(['GET'])
+def subirNota(request,ci_estudiante):
+    estudiante = Estudiante.objects.get(ci_estudiante=ci_estudiante)
+    asignatura_cursado=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante,codigo_asignatura='TSAC 101')
+    #nota=NotaEstudiante.objects.get()
+    asignatura_serializer=AsignaturaCursadaNotaSerializer(asignatura_cursado, many=True).data
+    return Response(asignatura_serializer)

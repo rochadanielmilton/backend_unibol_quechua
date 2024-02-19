@@ -17,7 +17,8 @@ router.register(r'notaEstudiante',NotaEstudianteView, basename='notaEstudiante')
 urlpatterns = [
     path('',include(router.urls)),
     path('obtenerAsignaturasCursadas/<int:ci_estudiante>/', views.ObtenerHitorialAcademico, name='obtenerAsignaturasCursadas'),
-    path('obtenerAsignaturasAprobadas/<int:ci_estudiante>/', views.ObtenerMateriasAprobadas, name='obtenerAsignaturasAprobadas'),   
+    path('obtenerAsignaturasAprobadas/<int:ci_estudiante>/', views.ObtenerMateriasAprobadas, name='obtenerAsignaturasAprobadas'),
+    path('subirNota/<int:ci_estudiante>/', views.subirNota, name='subirNota'),    
     
     #path('actualizarNotas/', views.ActualizarNotas, name='actualizarNotas'),
     

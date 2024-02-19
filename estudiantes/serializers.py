@@ -109,3 +109,16 @@ class MallaAcademicaSerializer(serializers.ModelSerializer):
          asignatura = malla.codigo_asignatura
          return asignatura.nombre_asignatura if asignatura else None
 
+
+class AsignaturaCursadaNotaSerializer(serializers.ModelSerializer):
+    nota_num_gestion=serializers.SerializerMethodField()
+    instancia=serializers.SerializerMethodField()
+    nota_num_instancia=serializers.SerializerMethodField()
+    nota_num_final=serializers.SerializerMethodField()
+    nota_literal_quechua=serializers.SerializerMethodField()
+    resultado_gestion=serializers.SerializerMethodField()    
+    resultado_gestion_espaniol=serializers.SerializerMethodField()
+
+    class Meta:
+        model = AsignaturaCursada
+        fields = ('codigo_asignatura','anio_cursado','estado_gestion_quechua','estado_gestion_espaniol','nota_num_gestion','instancia','nota_num_instancia','nota_num_final','nota_literal_quechua','resultado_gestion','')
