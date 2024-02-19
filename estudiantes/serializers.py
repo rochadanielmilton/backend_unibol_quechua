@@ -55,8 +55,10 @@ class AsignaturaCursadaSerializer(serializers.ModelSerializer):
         if asignatura_cursada.malla_aplicada=='2018' and asignatura_cursada.homologacion=='NO':
             return malla.codigo_asignatura.asignatura_malla_2018 if malla else None
         elif asignatura_cursada.malla_aplicada=='2018' and asignatura_cursada.homologacion=='SI' and asignatura_cursada.convalidacion!='':
-            malla2018=MallaAcademica2018.objects.filter(codigo=asignatura_cursada.convalidacion).first()
-            return malla2018.asignatura if malla2018 else None
+            #malla2018=MallaAcademica2018.objects.filter(codigo=asignatura_cursada.convalidacion).first()
+            #return malla2018.asignatura if malla2018 else None
+            asignatura=Asignatura.objects.get(codigo_asignatura=asignatura_cursada.convalidacion)
+            return asignatura.nombre_asignatura if asignatura else None
         elif asignatura_cursada.malla_aplicada=='2018' and asignatura_cursada.homologacion=='SI' and asignatura_cursada.codigo_asignatura=='LCEC 402':
                 return 'MONITOREO Y EVALUACIÓN DEL SISTEMA PRODUCTIVO'
         elif asignatura_cursada.malla_aplicada=='2018' and asignatura_cursada.homologacion=='SI' and asignatura_cursada.codigo_asignatura=='LCEC 406':
