@@ -47,3 +47,23 @@ class PostulantePrepaSerializer(serializers.ModelSerializer):
         model = PostulantePrepa
         fields =('ci_postulante','nombres_p','apellido_paterno_p','apellido_materno_p','anio_postulacion','nota_final','estado_ingreso','registrado')
    
+
+
+class AsignaturaCursadaAnioAnteriorSerializer(serializers.ModelSerializer):
+    nombre_asignatura=serializers.SerializerMethodField()
+    nota_num_final=serializers.SerializerMethodField()
+    observacion=serializers.SerializerMethodField()
+    class Meta:
+        model = AsignaturaCursada
+        fields=('codigo_asignatura','nombre_asignatura','nota_num_final','estado_gestion_espaniol','observacion')
+
+    def get_nombre_asignatura(self,asignatura_cursada):
+         malla = asignatura_cursada.id_malla_academica
+         return malla.codigo_asignatura.nombre_asignatura if malla else None
+    def get_nota_num_final(self, asignatura_cursada):
+        nota =asignatura_cursada.id_nota
+        return nota.nota_num_final if nota else None
+    def get_observacion(self,asignatura_cursada):
+        malla=asignatura_cursada.id_malla_academica
+        return malla.codigo_asignatura.detalle if malla else None
+    #fffffffffffffffffffffffffffffaaaaaaaaaaaaaaaaaaaaaallllllllllllllllllta es para las boletas

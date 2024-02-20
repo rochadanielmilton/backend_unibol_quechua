@@ -30,6 +30,10 @@ def ObtenerEstudiantesInscripcion(request):
 @api_view(['GET']) 
 def ObenerAsignaturasNoCursadas(request,ci_estudiante):
     estudiante=Estudiante.objects.filter(ci_estudiante=ci_estudiante).first()
+    anio_aterior=str(datetime.now().year-1)
+    lista_asignaturas_anio_anterior=AsignaturaCursada.objects.filter(anio_cursado=anio_aterior,ci_estudiante=ci_estudiante).order_by
+    lista_asignaturas_anio_anterior_serializer=AsignaturaCursadaAnioAnteriorSerializer(lista_asignaturas_anio_anterior,many=True).data
+    print("------------------",lista_asignaturas_anio_anterior_serializer)
     
     if estudiante:
         asignaturas_cursadas = AsignaturaCursada.objects.filter(ci_estudiante=estudiante.ci_estudiante)
@@ -40,12 +44,16 @@ def ObenerAsignaturasNoCursadas(request,ci_estudiante):
             if concluido == 'APR.':
                 lista_asignaturas_aprobadas.append(asig.id_malla_academica.codigo_asignatura.codigo_asignatura)
                 lista_asignaturas_aprobadas.append(asig.convalidacion)
+            if asig.codigo_asignatura=='TSAA 107' and asig.estado_gestion_espaniol=='REP.':
+                lista_asignaturas_aprobadas.remove('TSAA 107')
 
         malla_estudiante=MallaAcademica.objects.filter(codigo_carrera=estudiante.codigo_carrera).exclude(codigo_asignatura__in=lista_asignaturas_aprobadas)
         #print("WWWWWWWWWWWW",malla_estudiante)
         serializer_malla=MallaAcademicaInscripcionSerializer(malla_estudiante,many=True).data
         serializer_estudiante=EstudianteInscripcionSerializer(estudiante).data
-        return Response({"estudiante":serializer_estudiante,"oferta_materias":serializer_malla})
+        return Response({"estudiante":serializer_estudiante,
+                         "asignaturas_gestion_anterior":lista_asignaturas_anio_anterior_serializer,
+                         "oferta_materias":serializer_malla})
     else:
         return Response({"message":"el estudiante con ci ingresado no existe"})    
 
