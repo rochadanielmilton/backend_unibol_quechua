@@ -677,3 +677,15 @@ class ControlNumeroRegistro(models.Model):
     class Meta:
         managed = False
         db_table = 'control_numero_registro'
+
+class RequisitosInscripcion(models.Model):
+    requisito = models.CharField(max_length=150, blank=True, null=True)
+    tipo = models.CharField(max_length=30, blank=True, null=True)
+    estado = models.CharField(max_length=30, blank=True, null=True)
+    created = models.DateTimeField(blank=True, null=True)
+    modified = models.DateTimeField(blank=True, null=True)
+    gestion = models.CharField(max_length=20, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'requisitos_inscripcion'

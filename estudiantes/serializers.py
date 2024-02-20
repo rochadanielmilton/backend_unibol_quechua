@@ -147,3 +147,4 @@ class EstudianteSerializerFormularioAdmision(serializers.ModelSerializer):
     def get_comunidad_sindicato(self,estudiante):
         organizacion=Organizacion.objects.filter(ci_estudiante=estudiante.ci_estudiante).first()
         return organizacion.comunidad_sindicato if organizacion else None
+    
