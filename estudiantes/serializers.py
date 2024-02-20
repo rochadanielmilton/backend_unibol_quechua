@@ -124,3 +124,26 @@ class AsignaturaCursadaNotaSerializer(serializers.ModelSerializer):
     class Meta:
         model = AsignaturaCursada
         fields = ('codigo_asignatura','anio_cursado','estado_gestion_quechua','estado_gestion_espaniol','nota_num_gestion','instancia','nota_num_instancia','nota_num_final','nota_literal_quechua','resultado_gestion','')
+
+
+
+
+
+
+class EstudianteSerializerFormularioAdmision(serializers.ModelSerializer):
+    organizacion_matriz=serializers.SerializerMethodField()
+    organizacion_regional=serializers.SerializerMethodField()
+    comunidad_sindicato=serializers.SerializerMethodField()
+
+    class Meta:
+        model = Estudiante
+        fields = ('nombres','apellidoP','apellidoM','fecha_nacimiento','estado_civil','genero','prov_nacimiento','email','celular','organizacion_matriz','organizacion_regional','comunidad_sindicato','idioma_nativo')
+    def get_organizacion_matriz(self,estudiante):
+        organizacion= Organizacion.objects.filter(ci_estudiante=estudiante.ci_estudiante).first()
+        return organizacion.organizacion_matriz if organizacion else None
+    def get_organizacion_regional(self,estudiante):
+        organizacion=Organizacion.objects.filter(ci_estudiante=estudiante.ci_estudiante).first()
+        return organizacion.organizacion_departamental if organizacion else None
+    def get_comunidad_sindicato(self,estudiante):
+        organizacion=Organizacion.objects.filter(ci_estudiante=estudiante.ci_estudiante).first()
+        return organizacion.comunidad_sindicato if organizacion else None

@@ -177,3 +177,17 @@ def subirNota(request,ci_estudiante):
     #nota=NotaEstudiante.objects.get()
     asignatura_serializer=AsignaturaCursadaNotaSerializer(asignatura_cursado, many=True).data
     return Response(asignatura_serializer)
+
+@api_view(['GET'])
+def formularioAdmision(request,ci_estudiante):
+    gestion=str(datetime.now().year)
+    print("*********",gestion)
+    try:
+        estudiante=Estudiante.objects.get(ci_estudiante=ci_estudiante)
+        print("-----------------------",estudiante)
+        estudiante_serializer= EstudianteSerializerFormularioAdmision(estudiante).data
+        return Response({'gestion':gestion,
+                         'datos_estudiante':estudiante_serializer})
+    except:
+        return Response({'message':'No se encuentra el ci ingresado'})
+

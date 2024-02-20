@@ -18,7 +18,8 @@ urlpatterns = [
     path('',include(router.urls)),
     path('obtenerAsignaturasCursadas/<int:ci_estudiante>/', views.ObtenerHitorialAcademico, name='obtenerAsignaturasCursadas'),
     path('obtenerAsignaturasAprobadas/<int:ci_estudiante>/', views.ObtenerMateriasAprobadas, name='obtenerAsignaturasAprobadas'),
-    path('subirNota/<int:ci_estudiante>/', views.subirNota, name='subirNota'),    
+    path('subirNota/<int:ci_estudiante>/', views.subirNota, name='subirNota'),   
+    path('formularioAdmision/<int:ci_estudiante>/', views.formularioAdmision, name='formularioAdmision'),  
     
     #path('actualizarNotas/', views.ActualizarNotas, name='actualizarNotas'),
     
