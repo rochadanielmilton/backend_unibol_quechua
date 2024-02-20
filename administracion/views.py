@@ -66,7 +66,7 @@ def inscribirEstudiante(request):
             anio_aterior=str(datetime.now().year-1)
             lista_asignaturas_anio_anterior=AsignaturaCursada.objects.filter(anio_cursado=anio_aterior,ci_estudiante=ci_estudiante).order_by('codigo_asignatura')
             lista_asignaturas_anio_anterior_serializer=AsignaturaCursadaAnioAnteriorSerializer(lista_asignaturas_anio_anterior,many=True).data
-            #print("------------------",lista_asignaturas_anio_anterior_serializer)
+            print("------------------",lista_asignaturas_anio_anterior_serializer)
 
             estudiante = Estudiante.objects.get(ci_estudiante=ci_estudiante)
             fecha_emision=datetime.now().date()

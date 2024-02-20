@@ -5,7 +5,7 @@ class EstudianteSerializer(serializers.ModelSerializer):
     nombre_carrera=serializers.SerializerMethodField()
     class Meta:
         model = Estudiante
-        fields =('__all__')
+        fields =('ci_estudiante','ci_especial','apellidoP','apellidoM','nombres','nombre_carrera','tipo_ingreso','anio_ingreso','numero_archivo','anio_cursado','obs1','obs2','estado','inscrito_gestion')
     def get_nombre_carrera(self, estudiante):
         carrera=estudiante.codigo_carrera
         return carrera.nombre_carrera if carrera else None    
