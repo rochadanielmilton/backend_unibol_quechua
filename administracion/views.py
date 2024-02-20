@@ -30,10 +30,7 @@ def ObtenerEstudiantesInscripcion(request):
 @api_view(['GET']) 
 def ObenerAsignaturasNoCursadas(request,ci_estudiante):
     estudiante=Estudiante.objects.filter(ci_estudiante=ci_estudiante).first()
-    anio_aterior=str(datetime.now().year-1)
-    lista_asignaturas_anio_anterior=AsignaturaCursada.objects.filter(anio_cursado=anio_aterior,ci_estudiante=ci_estudiante).order_by
-    lista_asignaturas_anio_anterior_serializer=AsignaturaCursadaAnioAnteriorSerializer(lista_asignaturas_anio_anterior,many=True).data
-    print("------------------",lista_asignaturas_anio_anterior_serializer)
+    
     
     if estudiante:
         asignaturas_cursadas = AsignaturaCursada.objects.filter(ci_estudiante=estudiante.ci_estudiante)
@@ -51,8 +48,7 @@ def ObenerAsignaturasNoCursadas(request,ci_estudiante):
         #print("WWWWWWWWWWWW",malla_estudiante)
         serializer_malla=MallaAcademicaInscripcionSerializer(malla_estudiante,many=True).data
         serializer_estudiante=EstudianteInscripcionSerializer(estudiante).data
-        return Response({"estudiante":serializer_estudiante,
-                         "asignaturas_gestion_anterior":lista_asignaturas_anio_anterior_serializer,
+        return Response({"estudiante":serializer_estudiante,                         
                          "oferta_materias":serializer_malla})
     else:
         return Response({"message":"el estudiante con ci ingresado no existe"})    
@@ -60,11 +56,17 @@ def ObenerAsignaturasNoCursadas(request,ci_estudiante):
 #================================================================================================================
 @api_view(['POST']) 
 def inscribirEstudiante(request):
+    
     try:
         with transaction.atomic():
             data = request.data
             ci_estudiante = data.get('ci_estudiante')
             ids_mallas = data.get('ids_mallas')
+
+            anio_aterior=str(datetime.now().year-1)
+            lista_asignaturas_anio_anterior=AsignaturaCursada.objects.filter(anio_cursado=anio_aterior,ci_estudiante=ci_estudiante).order_by('codigo_asignatura')
+            lista_asignaturas_anio_anterior_serializer=AsignaturaCursadaAnioAnteriorSerializer(lista_asignaturas_anio_anterior,many=True).data
+            #print("------------------",lista_asignaturas_anio_anterior_serializer)
 
             estudiante = Estudiante.objects.get(ci_estudiante=ci_estudiante)
             fecha_emision=datetime.now().date()
@@ -108,6 +110,7 @@ def inscribirEstudiante(request):
                 else:
                     return Response({"message":"El estudiante ya esta inscrito"})
                 return Response({"estudiante": estudiante_serializer,
+                                 "asignaturas_gestion_anterior":lista_asignaturas_anio_anterior_serializer,
                                  "asignaturas_inscritas":asignaturas_malla_serializer,
                                  "fecha_emision":fecha_emision,
                                  "numero_boleta":numero_boleta,})
