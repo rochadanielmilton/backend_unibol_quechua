@@ -110,13 +110,15 @@ def inscribirEstudiante(request):
                     asignaturas_malla_serializer=MallaAcademicaInscripcionSerializer(asignaturas_malla,many=True).data
                     estudiante_serializer=EstudianteInscripcionSerializer(estudiante).data
                     numero_boleta=GenerarNuevaBoleta(estudiante.ci_estudiante)
+                    numero_archivo=obtenerNumeroArchivo(estudiante.ci_estudiante)
                 else:
                     return Response({"message":"El estudiante ya esta inscrito"})
                 return Response({"estudiante": estudiante_serializer,
                                  "asignaturas_gestion_anterior":lista_asignaturas_anio_anterior_serializer,
                                  "asignaturas_inscritas":asignaturas_malla_serializer,
                                  "fecha_emision":fecha_emision,
-                                 "numero_boleta":numero_boleta,})
+                                 "numero_boleta":numero_boleta,
+                                 'numero_archivo':numero_archivo})
             else:
                 return Response({"message": "El estudiante no se encuentra registrado"})
     except Exception as e:
@@ -347,8 +349,13 @@ def RegistrarMateriasPrimerAnio(estudiante,lista_asignaturas_malla):
     estudiante.save()
     estudiante_serializer=EstudianteInscripcionSerializer(estudiante).data
     fecha_emision=datetime.now().date()
+    numero_archivo=obtenerNumeroArchivo(estudiante.ci_estudiante)
     return Response({"estudiante": estudiante_serializer,
                                  "asignaturas_inscritas":asignaturas_malla_serializer,
                                  "fecha_emision":fecha_emision,
-                                 "numero_boleta":numero_boleta,})
+                                 "numero_boleta":numero_boleta,
+                                 'numero_archivo':numero_archivo})
 
+def obtenerNumeroArchivo(ci_estudiante):
+    estudiante=Estudiante.objects.get(ci_estudiante=ci_estudiante)
+    return estudiante.numero_archivo
