@@ -42,7 +42,8 @@ def ObenerAsignaturasNoCursadas(request,ci_estudiante):
                 lista_asignaturas_aprobadas.append(asig.id_malla_academica.codigo_asignatura.codigo_asignatura)
                 lista_asignaturas_aprobadas.append(asig.convalidacion)
             if asig.codigo_asignatura=='TSAA 107' and asig.estado_gestion_espaniol=='REP.':
-                lista_asignaturas_aprobadas.remove('TSAA 107')
+                if 'TSAA 107' in lista_asignaturas_aprobadas:
+                    lista_asignaturas_aprobadas.remove('TSAA 107')
 
         malla_estudiante=MallaAcademica.objects.filter(codigo_carrera=estudiante.codigo_carrera).exclude(codigo_asignatura__in=lista_asignaturas_aprobadas)
         #print("WWWWWWWWWWWW",malla_estudiante)
