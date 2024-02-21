@@ -140,6 +140,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # Agrega los dominios permitidos para acceder a tus APIs
     "http://192.168.30.20:8080",
     "http://192.168.30.22:7000",
+    "http://10.10.10.11:8000",
     "http://192.168.30.9:8080",
     "https://tu-otra-aplicacion.com",
 

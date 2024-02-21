@@ -5,7 +5,7 @@ from .serializers import *
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from datetime import datetime
-from django.db.models import Avg, Count, F
+from django.db.models import Avg, Count, F,Max
 from rest_framework import status
 from django.db import transaction
 
@@ -86,7 +86,10 @@ def inscribirEstudiante(request):
                             estado_gestion_quechua='QHIPAKUN',
                             estado_gestion_espaniol='ABANDONO',
                             fecha_inscripcion=datetime.now(),
-                            estado_inscripcion='inscrito'
+                            estado_inscripcion='inscrito',
+                            malla_aplicada='2023',
+                            homologacion='NO',
+                            cod_carrera=estudiante.codigo_carrera.codigo_carrera
                         )
                         nueva_nota=NotaEstudiante.objects.create(
                             id_asignatura_cursada=nueva_asignatura_cursada.id,
@@ -162,8 +165,9 @@ def RegistrarNueboEstudiante(request,ci_postulante):
     try:
         postulante=PostulantePrepa.objects.get(ci_postulante=ci_postulante)
         numero_registro=str(datetime.now().year)+str(datetime.now().month).zfill(2)+ str(ObtenerNumeroRegistro()).zfill(4)
+        carrera_nueva=ObtenerCodigoCarrera(postulante.carrera)
         nuevo_estudiante=Estudiante.objects.create(ci_estudiante=ci_postulante,extencion=postulante.extension_ci,
-                                                   codigo_carrera=ObtenerCodigoCarrera(postulante.carrera),
+                                                   codigo_carrera=carrera_nueva,
                                                    nombres=postulante.nombres_p,apellidoP=postulante.apellido_paterno_p,
                                                    apellidoM=postulante.apellido_materno_p,celular=int(postulante.telefono_postulante),
                                                    genero=postulante.genero,fecha_nacimiento=postulante.fecha_nacimiento,
@@ -171,7 +175,7 @@ def RegistrarNueboEstudiante(request,ci_postulante):
                                                    tipo_ingreso=postulante.tipo_ingreso,estado_civil=postulante.estadocivil,
                                                    idioma_nativo=postulante.lengua_que_habla,email=postulante.email_postulante,
                                                    anio_ingreso=(datetime.now().year),
-                                                   numero_archivo=postulante.id_postulante,homologacion='no',
+                                                   numero_archivo=obtenerUltimoNumeroRegistrado(carrera_nueva.codigo_carrera),homologacion='no',
                                                    convalidacion='no',egresado='no',titulado='no',estado='habilitado',baja='no',
                                                    numero_registro=numero_registro,anio_cursado='PRIMER AÑO',inscrito_gestion='no')
         if nuevo_estudiante:                                           
@@ -248,6 +252,16 @@ def ObtenerNumeroRegistro():
         nuevo=ControlNumeroRegistro.objects.create(numero_registro=1,gestion=str(datetime.now().year))
         return nuevo.numero_registro
     
+def obtenerUltimoNumeroRegistrado(codigo_carrera):
+    print("------------",codigo_carrera)
+    if codigo_carrera=='ACUC':
+        ultimo_estudiante = Estudiante.objects.filter(codigo_carrera=codigo_carrera).exclude(numero_archivo__in=[370, 495]).aggregate(max_numero_archivo=Max('numero_archivo'))['max_numero_archivo']
+        print("------------",ultimo_estudiante)
+        return ultimo_estudiante+1
+    else:
+        ultimo_estudiante=Estudiante.objects.filter(codigo_carrera=codigo_carrera).aggregate(max_numero_archivo=Max('numero_archivo'))['max_numero_archivo'] 
+        print("------------",ultimo_estudiante)
+        return ultimo_estudiante+1    
 
 @api_view(['DELETE']) 
 def EliminarDatos(request,ci_estudiante):
@@ -295,6 +309,7 @@ def InscribirEstudiantePrimerAnio(request,ci_estudiante):
 
 def RegistrarMateriasPrimerAnio(estudiante,lista_asignaturas_malla):
     for asignatura_malla in lista_asignaturas_malla:
+        #estudiante=Estudiante.objects.get(ci_estudiante=ci_estudiante)
         nueva_asignatura_cursada = AsignaturaCursada.objects.create(
             ci_estudiante=estudiante,
             codigo_asignatura=MallaAcademica.objects.filter(id=asignatura_malla).first().codigo_asignatura.codigo_asignatura,
@@ -303,7 +318,10 @@ def RegistrarMateriasPrimerAnio(estudiante,lista_asignaturas_malla):
             estado_gestion_quechua='QHIPAKUN',
             estado_gestion_espaniol='ABANDONO',
             fecha_inscripcion=datetime.now(),
-            estado_inscripcion='inscrito'
+            estado_inscripcion='inscrito',
+            malla_aplicada='2023',
+            homologacion='NO',
+            cod_carrera=estudiante.codigo_carrera.codigo_carrera
             )
         nueva_nota=NotaEstudiante.objects.create(
             id_asignatura_cursada=nueva_asignatura_cursada.id,
@@ -333,3 +351,4 @@ def RegistrarMateriasPrimerAnio(estudiante,lista_asignaturas_malla):
                                  "asignaturas_inscritas":asignaturas_malla_serializer,
                                  "fecha_emision":fecha_emision,
                                  "numero_boleta":numero_boleta,})
+

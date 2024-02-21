@@ -7,6 +7,7 @@ from rest_framework.decorators import api_view
 from datetime import datetime
 from django.db.models import Avg, Count, F
 from rest_framework import status
+from django.db.models import Max
 
 class AsignaturaView(viewsets.ModelViewSet):
     queryset=Asignatura.objects.all()
@@ -71,7 +72,7 @@ def ObtenerHitorialAcademico(request,ci_estudiante):
 
 def estadisticas_materias(ci_estudiante):
     # Filtrar las asignaturas cursadas
-    asignaturas_aprobadas = AsignaturaCursada.objects.filter(id_nota__resultado_gestion_espaniol='APROBADO',ci_estudiante=ci_estudiante)
+    asignaturas_aprobadas = AsignaturaCursada.objects.filter(id_nota__resultado_gestion_espaniol='APR.',ci_estudiante=ci_estudiante)
     if asignaturas_aprobadas: 
         cantidad_aprobadas = asignaturas_aprobadas.count()
         # Obtener el promedio de las notas finales de las asignaturas aprobadas
@@ -181,7 +182,7 @@ def subirNota(request,ci_estudiante):
 @api_view(['GET'])
 def formularioAdmision(request,ci_estudiante):
     gestion_actual=str(datetime.now().year)
-    
+    obtenerUltimo_numero_registrado('ACUC')
     try:
         estudiante=Estudiante.objects.get(ci_estudiante=ci_estudiante)
         if estudiante.anio_ingreso==gestion_actual:
@@ -195,3 +196,11 @@ def formularioAdmision(request,ci_estudiante):
     except:
         return Response({'message':'No se encuentra el ci ingresado'})
 
+def obtenerUltimo_numero_registrado(codigo_carrera):
+    if codigo_carrera=='ACUC':
+        ultimo_estudiante = Estudiante.objects.filter(codigo_carrera=codigo_carrera).exclude(numero_archivo__in=[370, 495]).aggregate(max_numero_archivo=Max('numero_archivo'))['max_numero_archivo']
+        print("------------",ultimo_estudiante)
+    else:
+        ultimo_estudiante=Estudiante.objects.filter(codigo_carrera=codigo_carrera).aggregate(max_numero_archivo=Max('numero_archivo'))['max_numero_archivo'] 
+        print("------------",ultimo_estudiante)
+    return ultimo_estudiante
