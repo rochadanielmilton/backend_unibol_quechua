@@ -183,6 +183,7 @@ def subirNota(request,ci_estudiante):
 def formularioAdmision(request,ci_estudiante):
     gestion_actual=str(datetime.now().year)
     obtenerUltimo_numero_registrado('ACUC')
+    numero_archivo=obtenerNumeroArchivo(ci_estudiante)
     try:
         estudiante=Estudiante.objects.get(ci_estudiante=ci_estudiante)
         if estudiante.anio_ingreso==gestion_actual:
@@ -192,9 +193,14 @@ def formularioAdmision(request,ci_estudiante):
         estudiante_serializer= EstudianteSerializerFormularioAdmision(estudiante).data
         return Response({'gestion':gestion_actual,
                          'datos_estudiante':estudiante_serializer,
-                         'requisitos':requisitos})
+                         'requisitos':requisitos,
+                         'numero_archivo':numero_archivo})
     except:
         return Response({'message':'No se encuentra el ci ingresado'})
+    
+def obtenerNumeroArchivo(ci_estudiante):
+    estudiante=Estudiante.objects.get(ci_estudiante=ci_estudiante)
+    return estudiante.numero_archivo
 
 def obtenerUltimo_numero_registrado(codigo_carrera):
     if codigo_carrera=='ACUC':

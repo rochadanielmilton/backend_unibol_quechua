@@ -134,10 +134,11 @@ class EstudianteSerializerFormularioAdmision(serializers.ModelSerializer):
     organizacion_matriz=serializers.SerializerMethodField()
     organizacion_regional=serializers.SerializerMethodField()
     comunidad_sindicato=serializers.SerializerMethodField()
+    nombre_carrera=serializers.SerializerMethodField()
 
     class Meta:
         model = Estudiante
-        fields = ('nombres','apellidoP','apellidoM','fecha_nacimiento','estado_civil','genero','prov_nacimiento','email','celular','organizacion_matriz','organizacion_regional','comunidad_sindicato','idioma_nativo')
+        fields = ('ci_estudiante','ci_especial','nombres','apellidoP','apellidoM','fecha_nacimiento','estado_civil','genero','prov_nacimiento','email','celular','organizacion_matriz','organizacion_regional','comunidad_sindicato','idioma_nativo','nombre_carrera')
     def get_organizacion_matriz(self,estudiante):
         organizacion= Organizacion.objects.filter(ci_estudiante=estudiante.ci_estudiante).first()
         return organizacion.organizacion_matriz if organizacion else None
@@ -147,4 +148,6 @@ class EstudianteSerializerFormularioAdmision(serializers.ModelSerializer):
     def get_comunidad_sindicato(self,estudiante):
         organizacion=Organizacion.objects.filter(ci_estudiante=estudiante.ci_estudiante).first()
         return organizacion.comunidad_sindicato if organizacion else None
-    
+    def get_nombre_carrera(self, estudiante):
+        carrera=estudiante.codigo_carrera
+        return carrera.nombre_carrera if carrera else None  
