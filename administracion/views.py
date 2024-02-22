@@ -364,17 +364,19 @@ def obtenerNumeroArchivo(ci_estudiante):
 
 @api_view(['GET']) 
 def reimprimirInscripcion(request,ci_estudiante):
-    estudiante=Estudiante.objects.get(ci_estudiante=ci_estudiante)
+    
     ultimo_año=str(datetime.now().year)
     anio_aterior=str(datetime.now().year-1)
     fecha_emision=datetime.now().date()
+    numero_archivo=obtenerNumeroArchivo(ci_estudiante)
+    estudiante=Estudiante.objects.get(ci_estudiante=ci_estudiante)
     numero_boleto=BoletaInscripcion.objects.filter(ci_estudiante=ci_estudiante).first()
     asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante,anio_cursado=ultimo_año)
     asignaturas_cursadas_serializer=AsignaturasCursadasSerializerReImpresion(asignaturas_cursadas,many=True).data
 
     lista_asignaturas_anio_anterior=AsignaturaCursada.objects.filter(anio_cursado=anio_aterior,ci_estudiante=ci_estudiante).order_by('codigo_asignatura')
     lista_asignaturas_anio_anterior_serializer=AsignaturaCursadaAnioAnteriorSerializer(lista_asignaturas_anio_anterior,many=True).data
-    #print("----------",asignaturas_cursadas)
+    
 
     estudiante_serializer=EstudianteInscripcionSerializer(estudiante).data
     
@@ -384,6 +386,12 @@ def reimprimirInscripcion(request,ci_estudiante):
                          "asignaturas_anio_anterior":lista_asignaturas_anio_anterior_serializer,
                          "anio_actual":ultimo_año,
                          "numero_boleta":numero_boleto.numero_boleta,
+                         "numero_archivo":numero_archivo,
                          "fecha_emision":fecha_emision})       
     else:
         return Response({"message":"error al optener los estudantes"},status=status.HTTP_400_BAD_REQUEST)
+    
+# @api_view(['GET']) 
+# def cancelarInscripcion(request,ci_estudiante):
+#     estudiante=Estudiante.objects.get(ci_estudiante=ci_estudiante)
+#     asignaturas_cursadas=AsignaturaCursada.objects.filter()
