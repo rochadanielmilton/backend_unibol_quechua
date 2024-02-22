@@ -419,9 +419,6 @@ def cancelarInscripcion(request, ci_estudiante):
     
     # Mensaje de respuesta detallado
     response_message = {
-        "message": "La inscripción del estudiante se canceló correctamente.",
-        "notas_eliminadas": notas_eliminadas[0] if notas_eliminadas else 0,
-        "asignaturas_eliminadas": len(asignaturas_cursadas)
-    }
+        "message": "La inscripción del estudiante se canceló correctamente." }
     
     return Response(response_message, status=status.HTTP_200_OK)
