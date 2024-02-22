@@ -415,7 +415,10 @@ def cancelarInscripcion(request, ci_estudiante):
     # Actualizar el estado de inscripción del estudiante
     estudiante.inscrito_gestion = 'no'
     estudiante.save()
-    BoletaInscripcion.objects.get(ci_estudiante=ci_estudiante).delete()
+    try:
+        BoletaInscripcion.objects.get(ci_estudiante=ci_estudiante).delete()
+    except ObjectDoesNotExist:
+        return Response({"message":"ya se cancelo el registro de este estudiante"})
     
     
     # Mensaje de respuesta detallado

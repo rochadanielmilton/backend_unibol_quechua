@@ -84,4 +84,4 @@ class AsignaturasCursadasSerializerReImpresion(serializers.ModelSerializer):
          return malla.codigo_asignatura.tipo if malla else None
     def get_observacion(self,asignatura_cursada):
          malla = asignatura_cursada.id_malla_academica
-         return malla.codigo_asignatura.detalle if malla else None
+         return None
