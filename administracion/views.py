@@ -8,6 +8,7 @@ from datetime import datetime
 from django.db.models import Avg, Count, F,Max
 from rest_framework import status
 from django.db import transaction
+from django.core.exceptions import ObjectDoesNotExist
 
 class EstudianteView(viewsets.ModelViewSet):
     queryset = Estudiante.objects.all()    
@@ -391,7 +392,36 @@ def reimprimirInscripcion(request,ci_estudiante):
     else:
         return Response({"message":"error al optener los estudantes"},status=status.HTTP_400_BAD_REQUEST)
     
-# @api_view(['GET']) 
-# def cancelarInscripcion(request,ci_estudiante):
-#     estudiante=Estudiante.objects.get(ci_estudiante=ci_estudiante)
-#     asignaturas_cursadas=AsignaturaCursada.objects.filter()
+
+
+@api_view(['GET']) 
+def cancelarInscripcion(request, ci_estudiante):
+    try:
+        # Verificar si el estudiante existe
+        estudiante = Estudiante.objects.get(ci_estudiante=ci_estudiante)
+    except ObjectDoesNotExist:
+        return Response({"message": "No se encontró el estudiante."}, status=status.HTTP_404_NOT_FOUND)
+    
+    # Obtener el año actual como cadena
+    ultimo_año = str(datetime.now().year)
+    
+    # Eliminar las notas de estudiante para las asignaturas cursadas en el año actual
+    asignaturas_cursadas = AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante, anio_cursado=ultimo_año)
+    notas_eliminadas = NotaEstudiante.objects.filter(id_asignatura_cursada__in=asignaturas_cursadas)
+    
+    # Eliminar las asignaturas cursadas para el año actual
+    asignaturas_cursadas.delete()
+    notas_eliminadas.delete()
+    # Actualizar el estado de inscripción del estudiante
+    estudiante.inscrito_gestion = 'no'
+    estudiante.save()
+    
+    
+    # Mensaje de respuesta detallado
+    response_message = {
+        "message": "La inscripción del estudiante se canceló correctamente.",
+        "notas_eliminadas": notas_eliminadas[0] if notas_eliminadas else 0,
+        "asignaturas_eliminadas": len(asignaturas_cursadas)
+    }
+    
+    return Response(response_message, status=status.HTTP_200_OK)
