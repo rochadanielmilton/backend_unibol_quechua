@@ -150,4 +150,5 @@ class EstudianteSerializerFormularioAdmision(serializers.ModelSerializer):
         return organizacion.comunidad_sindicato if organizacion else None
     def get_nombre_carrera(self, estudiante):
         carrera=estudiante.codigo_carrera
-        return carrera.nombre_carrera if carrera else None  
+        return carrera.nombre_carrera if carrera else None   
+
