@@ -415,6 +415,7 @@ def cancelarInscripcion(request, ci_estudiante):
     # Actualizar el estado de inscripción del estudiante
     estudiante.inscrito_gestion = 'no'
     estudiante.save()
+    BoletaInscripcion.objects.get(ci_estudiante=ci_estudiante).delete()
     
     
     # Mensaje de respuesta detallado
