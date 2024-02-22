@@ -12,6 +12,7 @@ urlpatterns = [
     path('registrarNueboEstudiante/<int:ci_postulante>/', views.RegistrarNueboEstudiante, name='registrarNueboEstudiante'),
     path('eliminarDatos/<int:ci_estudiante>/', views.EliminarDatos, name='eliminarDatos'),
     path('inscribirEstudiantePrimerAnio/<int:ci_estudiante>/', views.InscribirEstudiantePrimerAnio, name='inscribirEstudiantePrimerAnio'),
+    path('reimprimirInscripcion/<int:ci_estudiante>/', views.reimprimirInscripcion, name='reimprimirInscripcion'),
     
     
        

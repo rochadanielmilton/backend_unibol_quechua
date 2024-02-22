@@ -45,7 +45,7 @@ class MallaAcademicaInscripcionSerializer(serializers.ModelSerializer):
 class PostulantePrepaSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostulantePrepa
-        fields =('ci_postulante','nombres_p','apellido_paterno_p','apellido_materno_p','anio_postulacion','nota_final','estado_ingreso','registrado')
+        fields =('ci_postulante','nombres_p','apellido_paterno_p','apellido_materno_p','anio_postulacion','nota_final','carrera','estado_ingreso','registrado')
    
 
 
@@ -67,3 +67,21 @@ class AsignaturaCursadaAnioAnteriorSerializer(serializers.ModelSerializer):
         malla=asignatura_cursada.id_malla_academica
         return malla.codigo_asignatura.detalle if malla else None
     #fffffffffffffffffffffffffffffaaaaaaaaaaaaaaaaaaaaaallllllllllllllllllta es para las boletas
+
+class AsignaturasCursadasSerializerReImpresion(serializers.ModelSerializer):
+    nombre_asignatura=serializers.SerializerMethodField()
+    tipo=serializers.SerializerMethodField()
+    observacion=serializers.SerializerMethodField()
+    class Meta:
+        model = AsignaturaCursada
+        fields=('codigo_asignatura','nombre_asignatura','tipo','observacion')
+
+    def get_nombre_asignatura(self,asignatura_cursada):
+         malla = asignatura_cursada.id_malla_academica
+         return malla.codigo_asignatura.nombre_asignatura if malla else None
+    def get_tipo(self,asignatura_cursada):
+         malla = asignatura_cursada.id_malla_academica
+         return malla.codigo_asignatura.tipo if malla else None
+    def get_observacion(self,asignatura_cursada):
+         malla = asignatura_cursada.id_malla_academica
+         return malla.codigo_asignatura.detalle if malla else None

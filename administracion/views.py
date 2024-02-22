@@ -360,3 +360,23 @@ def RegistrarMateriasPrimerAnio(estudiante,lista_asignaturas_malla):
 def obtenerNumeroArchivo(ci_estudiante):
     estudiante=Estudiante.objects.get(ci_estudiante=ci_estudiante)
     return estudiante.numero_archivo
+
+
+@api_view(['GET']) 
+def reimprimirInscripcion(request,ci_estudiante):
+    estudiante=Estudiante.objects.get(ci_estudiante=ci_estudiante)
+    ultimo_año=str(datetime.now().year)
+    fecha_emision=datetime.now().date()
+    asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante,anio_cursado=ultimo_año)
+    asignaturas_cursadas_serializer=AsignaturasCursadasSerializerReImpresion(asignaturas_cursadas,many=True).data
+    print("----------",asignaturas_cursadas)
+
+    estudiante_serializer=EstudianteInscripcionSerializer(estudiante).data
+    
+    if estudiante:
+        return Response({"estudiantes": estudiante_serializer,
+                         "asignaturas_tomadas":asignaturas_cursadas_serializer,
+                         "anio_actual":ultimo_año,
+                         "fecha_emision":fecha_emision})       
+    else:
+        return Response({"message":"error al optener los estudantes"},status=status.HTTP_400_BAD_REQUEST)
