@@ -31,7 +31,7 @@ def ObtenerEstudiantesInscripcion(request):
 @api_view(['GET']) 
 def ObenerAsignaturasNoCursadas(request,ci_estudiante):
     estudiante=Estudiante.objects.filter(ci_estudiante=ci_estudiante).first()
-    
+    anio_actual=datetime.now().year
     
     if estudiante:
         asignaturas_cursadas = AsignaturaCursada.objects.filter(ci_estudiante=estudiante.ci_estudiante)
@@ -47,11 +47,16 @@ def ObenerAsignaturasNoCursadas(request,ci_estudiante):
                     lista_asignaturas_aprobadas.remove('TSAA 107')
 
         malla_estudiante=MallaAcademica.objects.filter(codigo_carrera=estudiante.codigo_carrera).exclude(codigo_asignatura__in=lista_asignaturas_aprobadas)
-        #print("WWWWWWWWWWWW",malla_estudiante)
+        if malla_estudiante:
+            message="ok"
+        else:
+            message='DEFENZA DE GRADO'
         serializer_malla=MallaAcademicaInscripcionSerializer(malla_estudiante,many=True).data
         serializer_estudiante=EstudianteInscripcionSerializer(estudiante).data
         return Response({"estudiante":serializer_estudiante,                         
-                         "oferta_materias":serializer_malla})
+                         "oferta_materias":serializer_malla,
+                         "message":message,
+                         "anio_actual":anio_actual})
     else:
         return Response({"message":"el estudiante con ci ingresado no existe"})    
 
@@ -154,7 +159,7 @@ def GenerarNuevaBoleta(ci_estudiante):
 #=======FUNCIONES PARA LA MIGRACION DE REGISTROS DE POSTALTE A ESTUDIANTES REGULARES====================
 @api_view(['GET']) 
 def ObtenerPostulates(request):
-    postulantes=PostulantePrepa.objects.all().order_by('-registrado')
+    postulantes=PostulantePrepa.objects.filter(estado_ingreso='APROBADO').order_by('-registrado')
     postulante_serializer=PostulantePrepaSerializer(postulantes,many=True).data
     if postulantes:
         return Response(postulante_serializer,status=status.HTTP_200_OK)       
