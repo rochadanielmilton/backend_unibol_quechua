@@ -43,7 +43,7 @@ def ObtenerMallaPorCarrera(request,codigo_carrera):
     queryset=MallaAcademica.objects.filter(codigo_carrera=codigo_carrera)
     serializer_class=MallaAcademicaSerializer(queryset,many=True).data
     return Response(serializer_class)
-@api_view(['GET']) 
+#@api_view(['GET']) 
 # def actualizar_tablas(request):
 #     #=========================================CARGADO DE DATOS DEL ESTUDIANTE, NOTAS, Y OTRAS TABLAS DE BASE ANTERIOR=========================
 #      estudiante2=Estudiante2.objects.all()
@@ -151,43 +151,57 @@ def ObtenerMallaPorCarrera(request,codigo_carrera):
      
 
      #=======================CARGADO DE NOTAS DE ESTUDIANTES ESPECIFICOS==========================================
-    #  notas=NotaEstudiante2.objects.filter(cod_estudiante='6719461-1O')
-    #  for nota in notas:
-    #         cod_estudiante=nota.cod_estudiante
-    #         gestion_cursada=nota.gestionnota
-    #         estado_gestion_quechua=nota.resultado_gestion
-    #         estado_gestion_espaniol=nota.estado_calificacion
-    #         codigo_asignaturaa=nota.cod_asignatura
-    #         codigo_carrera=nota.codigoc
-    #         estudiante=Estudiante.objects.get(ci_estudiante=6719461)
-    #         try:
-    #             malla_academica=MallaAcademica.objects.get(codigo_carrera=codigo_carrera,codigo_asignatura=codigo_asignaturaa)
-    #             print("QQQQQQQQQQQQQQ",malla_academica)
-    #             asignaturaCursada=AsignaturaCursada.objects.create(ci_estudiante=estudiante,id_malla_academica=malla_academica,codigo_asignatura= codigo_asignaturaa,
-    #                                                             anio_cursado=gestion_cursada, estado_gestion_quechua=estado_gestion_quechua,estado_gestion_espaniol=estado_gestion_espaniol,
-    #                                                             estado_inscripcion="concluido")
-    #         except:
-    #             asignaturaCursada=AsignaturaCursada.objects.create(ci_estudiante=estudiante,codigo_asignatura= codigo_asignaturaa,
-    #                                                             anio_cursado=gestion_cursada, estado_gestion_quechua=estado_gestion_quechua,estado_gestion_espaniol=estado_gestion_espaniol,
-    #                                                             estado_inscripcion="concluido")
+@api_view(['GET']) 
+def actualizarNotaEstudianteEspecial(request):
+     notas=NotaEstudiante2.objects.filter(cod_estudiante='6719461-1O')
+     if not notas:
+         return Response({"message":"no se encontro registros"})
+     for nota in notas:
+            cod_estudiante=nota.cod_estudiante
+            gestion_cursada=nota.gestionnota
+            estado_gestion_quechua=nota.resultado_gestion
+            codigo_asignaturaa=nota.cod_asignatura
+            codigo_carrera=nota.codigoc
+            estado_gestion_espaniol=nota.estado_calificacion
+            convalidacion=nota.convalidacion
+            malla_aplicada=nota.malla_aplicada
+            homologacion=nota.homologacion
+            codigo_malla_ajustada=nota.codigo_malla_ajustada
+            cod_carrera=nota.codigoc
+            estudiante=Estudiante.objects.get(ci_estudiante=6719461)
+            try:
+                malla_academica=MallaAcademica.objects.get(codigo_carrera=codigo_carrera,codigo_asignatura=codigo_asignaturaa)
+                print("QQQQQQQQQQQQQQ",malla_academica)
+                asignaturaCursada=AsignaturaCursada.objects.create(ci_estudiante=estudiante,id_malla_academica=malla_academica,codigo_asignatura= codigo_asignaturaa,
+                                                                anio_cursado=gestion_cursada, estado_gestion_quechua=estado_gestion_quechua,
+                                                                estado_inscripcion="concluido",estado_gestion_espaniol=estado_gestion_espaniol,convalidacion=convalidacion,
+                                                                malla_aplicada=malla_aplicada,homologacion=homologacion,
+                                                                codigo_malla_ajustada=codigo_malla_ajustada,cod_carrera=cod_carrera)
+            except:
+                asignaturaCursada=AsignaturaCursada.objects.create(ci_estudiante=estudiante,codigo_asignatura= codigo_asignaturaa,
+                                                                anio_cursado=gestion_cursada, estado_gestion_quechua=estado_gestion_quechua,estado_gestion_espaniol=estado_gestion_espaniol,
+                                                                estado_inscripcion="concluido")
 
-    #         nota_gestion=nota.nota_gestion
-    #         instancia="no"
-    #         nota_instancia=nota.instancia
-    #         if nota_instancia:
-    #             instancia="si"
-    #             nota_instancia=int(nota.instancia)
-    #         nota_final=nota.nota_final
-    #         nota_quechua=nota.nota_quechua
-    #         res_cualitativo=nota.res_cualitativo
-    #         resultado_gestion=nota.resultado_gestion
-    #         nivel_carrera=nota.nivel
-    #         notas_actual=NotaEstudiante.objects.create(id_asignatura_cursada=asignaturaCursada,nota_num_gestion=nota_gestion,instancia=instancia,
-    #                                             nota_num_instancia=nota_instancia,nota_num_final=nota_final,nota_literal_quechua=nota_quechua,
-    #                                             res_cualitativo=res_cualitativo,resultado_gestion=resultado_gestion,gestion_cursada=gestion_cursada,
-    #                                             nota_literal_espaniol=estado_gestion_espaniol,nivel_carrera=nivel_carrera)
+            nota_gestion=nota.nota_gestion
+            instancia="no"
+            nota_instancia=nota.instancia
+            if nota_instancia:
+                instancia="si"
+                nota_instancia=int(nota.instancia)
+            nota_final=nota.nota_final
+            nota_quechua=nota.nota_quechua
+            res_cualitativo=nota.res_cualitativo
+            resultado_gestion=nota.resultado_gestion
+            nivel_carrera=nota.nivel
+            notas_actual=NotaEstudiante.objects.create(id_asignatura_cursada=asignaturaCursada.id,nota_num_gestion=nota_gestion,instancia=instancia,
+                                                nota_num_instancia=nota_instancia,nota_num_final=nota_final,nota_literal_quechua=nota_quechua,
+                                                res_cualitativo=res_cualitativo,resultado_gestion=resultado_gestion,gestion_cursada=gestion_cursada,
+                                                resultado_gestion_espaniol=estado_gestion_espaniol,nivel_carrera=nivel_carrera)
+            
+            asignaturaCursada.id_nota=notas_actual
+            asignaturaCursada.save()
     #==============================================================================================================================
-     #return Response({"respuesta":"Respuesta exitosa "})
+     return Response({"respuesta":"Respuesta exitosa "})
 
 @api_view(['GET']) 
 def ObtenerProvincias(request,nombre_departamento):

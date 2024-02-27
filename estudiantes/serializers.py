@@ -36,6 +36,7 @@ class AsignaturaCursadaSerializer(serializers.ModelSerializer):
     nombre_asignatura=serializers.SerializerMethodField()
     total_horas=serializers.SerializerMethodField()
     pre_requisitos=serializers.SerializerMethodField()
+    nota_literal_quechua=serializers.SerializerMethodField()
     class Meta:
         model = AsignaturaCursada
         fields = ('ci_estudiante','codigo_asignatura','convalidacion','homologacion','anio_cursado','estado_gestion_espaniol','nota_num_final','nombre_asignatura','total_horas','pre_requisitos')
@@ -77,7 +78,8 @@ class AsignaturaCursadaSerializer(serializers.ModelSerializer):
         else:
             requisitos=malla.codigo_asignatura.pre_requisito1
         return requisitos if malla else None
-    
+    #def get_nota_literal_quechua(self, asignatura_cursada):
+
 
 class NotaEstudianteSerializer(serializers.ModelSerializer):
     class Meta:

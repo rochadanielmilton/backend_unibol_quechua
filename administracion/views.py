@@ -18,7 +18,7 @@ class EstudianteView(viewsets.ModelViewSet):
 #=========================LISTA DE ESTUDIANTE PARA INSCRIPCION========================================
 @api_view(['GET']) 
 def ObtenerEstudiantesInscripcion(request):
-    estudiantes=Estudiante.objects.filter(baja='no').order_by('-anio_ingreso')
+    estudiantes=Estudiante.objects.filter(baja='no').order_by('numero_registro')
     estudiante_serializer=EstudianteInscripcionSerializer(estudiantes, many=True).data
     ultimo_año=str(datetime.now().year)
     if estudiantes:
@@ -42,6 +42,8 @@ def ObenerAsignaturasNoCursadas(request,ci_estudiante):
             if concluido == 'APR.':
                 lista_asignaturas_aprobadas.append(asig.id_malla_academica.codigo_asignatura.codigo_asignatura)
                 lista_asignaturas_aprobadas.append(asig.convalidacion)
+                if asig.codigo_malla_ajustada!='-':
+                    lista_asignaturas_aprobadas.append(asig.codigo_malla_ajustada)
             if asig.codigo_asignatura=='TSAA 107' and asig.estado_gestion_espaniol=='REP.':
                 if 'TSAA 107' in lista_asignaturas_aprobadas:
                     lista_asignaturas_aprobadas.remove('TSAA 107')

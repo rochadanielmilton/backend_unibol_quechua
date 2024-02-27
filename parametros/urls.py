@@ -17,7 +17,8 @@ urlpatterns = [
     path('', include(router.urls)),
     #path('actualizar', views.actualizar_tablas, name='actualizar'),
     path('obtenerProvincias/<str:nombre_departamento>/', views.ObtenerProvincias, name='obtenerProvincias'),
-    path('mallaAcademica/<str:codigo_carrera>/',views.ObtenerMallaPorCarrera,name='mallaAcademica')
+    path('mallaAcademica/<str:codigo_carrera>/',views.ObtenerMallaPorCarrera,name='mallaAcademica'),
+    path('actualizarNotaEstudianteEspecial/',views.actualizarNotaEstudianteEspecial,name='actualizarNotaEstudianteEspecial')
     
 
     

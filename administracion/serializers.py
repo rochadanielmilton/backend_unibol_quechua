@@ -20,12 +20,17 @@ class EstudianteSerializer(serializers.ModelSerializer):
        
 class EstudianteInscripcionSerializer(serializers.ModelSerializer):
     nombre_carrera=serializers.SerializerMethodField()
+    numero_boleta=serializers.SerializerMethodField()
     class Meta:
         model =Estudiante
-        fields=('ci_estudiante','nombres','apellidoP','apellidoM','codigo_carrera','nombre_carrera','numero_registro','anio_cursado','inscrito_gestion','anio_ingreso','tipo_ingreso')
+        fields=('ci_estudiante','nombres','apellidoP','apellidoM','codigo_carrera','nombre_carrera','numero_registro','anio_cursado','inscrito_gestion','anio_ingreso','tipo_ingreso','numero_boleta','ci_especial')
     def get_nombre_carrera(self, estudiante):
         carrera=estudiante.codigo_carrera
         return carrera.nombre_carrera if carrera else None
+    def get_numero_boleta(self, estudiante):
+        ci=estudiante.ci_estudiante
+        boleta=BoletaInscripcion.objects.filter(ci_estudiante=ci).first()
+        return boleta.numero_boleta if boleta else None
 
 class MallaAcademicaInscripcionSerializer(serializers.ModelSerializer):
     nombre_asignatura=serializers.SerializerMethodField()

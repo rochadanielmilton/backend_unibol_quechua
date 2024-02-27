@@ -19,7 +19,8 @@ urlpatterns = [
     path('obtenerAsignaturasCursadas/<int:ci_estudiante>/', views.ObtenerHitorialAcademico, name='obtenerAsignaturasCursadas'),
     path('obtenerAsignaturasAprobadas/<int:ci_estudiante>/', views.ObtenerMateriasAprobadas, name='obtenerAsignaturasAprobadas'),
     path('subirNota/<int:ci_estudiante>/', views.subirNota, name='subirNota'),   
-    path('formularioAdmision/<int:ci_estudiante>/', views.formularioAdmision, name='formularioAdmision'),  
+    path('formularioAdmision/<int:ci_estudiante>/', views.formularioAdmision, name='formularioAdmision'),
+    path('obtenerCerficiacionGestionAnterior/<int:ci_estudiante>/', views.obtenerCerficiacionGestionAnterior, name='obtenerCerficiacionGestionAnterior'),  
     
     #path('actualizarNotas/', views.ActualizarNotas, name='actualizarNotas'),
     
