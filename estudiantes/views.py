@@ -212,7 +212,7 @@ def obtenerUltimo_numero_registrado(codigo_carrera):
     return ultimo_estudiante
 
 @api_view(['GET'])
-def obtenerCerficiacionGestionAnterior(request,ci_estudiante):
+def obtenerCertificacionGestionAnterior(request,ci_estudiante):
     estudiante=Estudiante.objects.filter(ci_estudiante=ci_estudiante)
     if estudiante:
         
