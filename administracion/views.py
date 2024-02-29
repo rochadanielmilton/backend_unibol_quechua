@@ -40,10 +40,14 @@ def ObenerAsignaturasNoCursadas(request,ci_estudiante):
         for asig in asignaturas_cursadas:        
             concluido = asig.estado_gestion_espaniol
             if concluido == 'APR.':
-                lista_asignaturas_aprobadas.append(asig.id_malla_academica.codigo_asignatura.codigo_asignatura)
-                lista_asignaturas_aprobadas.append(asig.convalidacion)
-                if asig.codigo_malla_ajustada!='-':
-                    lista_asignaturas_aprobadas.append(asig.codigo_malla_ajustada)
+                #if asig.malla_aplicada!='2018' and asig.homologacion!='NO':
+                    lista_asignaturas_aprobadas.append(asig.id_malla_academica.codigo_asignatura.codigo_asignatura)
+                    lista_asignaturas_aprobadas.append(asig.convalidacion)
+                    if asig.codigo_malla_ajustada!='-':
+                        lista_asignaturas_aprobadas.append(asig.codigo_malla_ajustada)
+                    if asig.codigo_asignatura==asig.codigo_malla_ajustada:
+                        lista_asignaturas_aprobadas.append(asig.codigo_asignatura)                
+                
             if asig.codigo_asignatura=='TSAA 107' and asig.estado_gestion_espaniol=='REP.':
                 if 'TSAA 107' in lista_asignaturas_aprobadas:
                     lista_asignaturas_aprobadas.remove('TSAA 107')
@@ -433,3 +437,51 @@ def cancelarInscripcion(request, ci_estudiante):
         "message": "La inscripción del estudiante se canceló correctamente." }
     
     return Response(response_message, status=status.HTTP_200_OK)
+
+
+@api_view(['GET']) 
+def inscripcionParaDefensa(request,ci_estudiante):
+    
+    ultimo_año=str(datetime.now().year)
+    anio_aterior=str(datetime.now().year-1)
+    fecha_emision=datetime.now().date()
+    numero_archivo=obtenerNumeroArchivo(ci_estudiante)
+    estudiante=Estudiante.objects.get(ci_estudiante=ci_estudiante)    
+    materias=culminacionMaterias(ci_estudiante)
+    if materias:
+        estudiante_serializer=EstudianteInscripcionSerializer(estudiante).data
+        return Response({"estudiantes": estudiante_serializer,                         
+                         "anio_actual":ultimo_año,
+                         "numero_archivo":numero_archivo,
+                         "fecha_emision":fecha_emision})       
+    else:
+        return Response({"message":"error al inscribir a defensa"},status=status.HTTP_400_BAD_REQUEST)
+    
+
+
+def culminacionMaterias(ci_estudiante):
+    estudiante=Estudiante.objects.filter(ci_estudiante=ci_estudiante).first()    
+    if estudiante:
+        asignaturas_cursadas = AsignaturaCursada.objects.filter(ci_estudiante=estudiante.ci_estudiante)
+        lista_asignaturas_aprobadas = []
+
+        for asig in asignaturas_cursadas:        
+            concluido = asig.estado_gestion_espaniol
+            if concluido == 'APR.':
+                #if asig.malla_aplicada!='2018' and asig.homologacion!='NO':
+                    lista_asignaturas_aprobadas.append(asig.id_malla_academica.codigo_asignatura.codigo_asignatura)
+                    lista_asignaturas_aprobadas.append(asig.convalidacion)
+                    if asig.codigo_malla_ajustada!='-':
+                        lista_asignaturas_aprobadas.append(asig.codigo_malla_ajustada)
+                    if asig.codigo_asignatura==asig.codigo_malla_ajustada:
+                        lista_asignaturas_aprobadas.append(asig.codigo_asignatura)                
+                
+            if asig.codigo_asignatura=='TSAA 107' and asig.estado_gestion_espaniol=='REP.':
+                if 'TSAA 107' in lista_asignaturas_aprobadas:
+                    lista_asignaturas_aprobadas.remove('TSAA 107')
+
+        malla_estudiante=MallaAcademica.objects.filter(codigo_carrera=estudiante.codigo_carrera).exclude(codigo_asignatura__in=lista_asignaturas_aprobadas)
+        if malla_estudiante:
+            return True
+    else:
+        return False
