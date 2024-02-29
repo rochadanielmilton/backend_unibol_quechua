@@ -448,6 +448,7 @@ def inscripcionParaDefensa(request,ci_estudiante):
     numero_archivo=obtenerNumeroArchivo(ci_estudiante)
     estudiante=Estudiante.objects.get(ci_estudiante=ci_estudiante)    
     materias=culminacionMaterias(ci_estudiante)
+    print("--------------",materias)
     if materias:
         estudiante_serializer=EstudianteInscripcionSerializer(estudiante).data
         return Response({"estudiantes": estudiante_serializer,                         
@@ -455,7 +456,7 @@ def inscripcionParaDefensa(request,ci_estudiante):
                          "numero_archivo":numero_archivo,
                          "fecha_emision":fecha_emision})       
     else:
-        return Response({"message":"error al inscribir a defensa"},status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message":"El estudiante cuenta con materias por cursar"},status=status.HTTP_400_BAD_REQUEST)
     
 
 
@@ -482,6 +483,8 @@ def culminacionMaterias(ci_estudiante):
 
         malla_estudiante=MallaAcademica.objects.filter(codigo_carrera=estudiante.codigo_carrera).exclude(codigo_asignatura__in=lista_asignaturas_aprobadas)
         if malla_estudiante:
+            return False
+        else:
             return True
     else:
         return False
