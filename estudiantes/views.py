@@ -72,29 +72,55 @@ def ObtenerHitorialAcademico(request,ci_estudiante):
 
 @api_view(['GET'])
 def ObtenerHitorialAcademico2(request,ci_estudiante):
-    estudiante=Estudiante.objects.filter(ci_estudiante=ci_estudiante)
-    if estudiante:
-        
+    estudiante=Estudiante.objects.filter(ci_estudiante=ci_estudiante).first()
+    if estudiante and estudiante.codigo_carrera.codigo_carrera!='TIAL':
+        #print("+++++++++++",estudiante.codigo_carrera)
         grado=VerificarGrado(ci_estudiante)
         fecha_hora=datetime.now()
         fecha_emision = fecha_hora.strftime("%Y-%m-%d %H:%M:%S")
                
         materias_tomadas=[]
-        estudiante_serializer=EstudianteHistorialSerializer(estudiante.first()).data
+        estudiante_serializer=EstudianteHistorialSerializer(estudiante).data
         asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).order_by('anio_cursado')
         for asignatura in asignaturas_cursadas:
-            materias_tomadas.append(asignatura.codigo_asignatura)
+            auxiliar=[]
             if asignatura.malla_aplicada=='2018' and asignatura.homologacion=='SI':
-                nombre_asignatura=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_malla_ajustada).nombre_asignatura
-                materias_tomadas.append(nombre_asignatura)
+                auxiliar.append(asignatura.anio_cursado)
+                auxiliar.append(asignatura.codigo_malla_ajustada)
+                materia=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_malla_ajustada)             
+                auxiliar.append(materia.nombre_asignatura)
+                auxiliar.append(materia.total_horas)
+                auxiliar.append((materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1)
+                auxiliar.append(asignatura.id_nota.nota_num_final)
+                auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
+                auxiliar.append(asignatura.homologacion)
+                materias_tomadas.append(auxiliar)
+                print(asignatura.anio_cursado," - ",asignatura.codigo_malla_ajustada," = ",materia.nombre_asignatura," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
                 
             elif asignatura.malla_aplicada=='2018'and  asignatura.homologacion=='NO':
-                nombre_asignatura=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_asignatura).asignatura_malla_2018
-                materias_tomadas.append(nombre_asignatura)
-            elif asignatura.malla_aplicada=='2023':
-                nombre_asignatura=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_asignatura).nombre_asignatura
-                materias_tomadas.append(nombre_asignatura)
-            print("------------",asignatura.codigo_asignatura,' = ',nombre_asignatura)
+                auxiliar.append(asignatura.anio_cursado)
+                auxiliar.append(asignatura.codigo_asignatura)
+                materia=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_asignatura)
+                auxiliar.append(materia.asignatura_malla_2018)
+                auxiliar.append(materia.total_horas)
+                auxiliar.append((materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1)
+                auxiliar.append(asignatura.id_nota.nota_num_final)
+                auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
+                auxiliar.append(asignatura.homologacion)
+                materias_tomadas.append(auxiliar)
+                print(asignatura.anio_cursado," - ",asignatura.codigo_asignatura," = ",materia.asignatura_malla_2018," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
+            elif asignatura.malla_aplicada=='2023' and asignatura.estado_gestion_espaniol!='ABANDONO':
+                auxiliar.append(asignatura.anio_cursado)
+                auxiliar.append(asignatura.codigo_asignatura)
+                materia=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_asignatura)
+                auxiliar.append(materia.nombre_asignatura)
+                auxiliar.append(materia.total_horas)
+                auxiliar.append((materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1)
+                auxiliar.append(asignatura.id_nota.nota_num_final)
+                auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
+                auxiliar.append(asignatura.homologacion)
+                materias_tomadas.append(auxiliar)
+                print(asignatura.anio_cursado," - ",asignatura.codigo_asignatura," = ",materia.nombre_asignatura," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
 
         # if asignaturas_cursadas:
         #     otros_datos= estadisticas_materias(ci_estudiante)
@@ -111,6 +137,7 @@ def ObtenerHitorialAcademico2(request,ci_estudiante):
         return Response({"estudiante":estudiante_serializer,
                      "grado":grado,
                      "fecha_emision":fecha_emision,
+                     "data":materias_tomadas
                      #"datos":serializer_asignaturas_cursadas,
                      #"otros_datos":otros_datos
                      })
