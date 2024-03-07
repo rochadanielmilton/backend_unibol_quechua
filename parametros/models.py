@@ -24,8 +24,8 @@ class Asignatura(models.Model):
     pre_requisito1 = models.CharField(max_length=100, blank=True, null=True)
     pre_requisito2 = models.CharField(max_length=100, blank=True, null=True)
     anio_asignado = models.CharField(max_length=20, blank=True, null=True, db_comment='el anio al que pertenece la materia')
-    created = models.DateTimeField(blank=True, null=True)
-    modified = models.DateTimeField(blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    modified = models.DateTimeField(auto_now=True, blank=True, null=True)
     carrera_codigo = models.CharField(max_length=30, blank=True, null=True)
     asignatura_malla_2018 = models.CharField(max_length=150, blank=True, null=True, db_comment='asignaturas malla anterior')
     tipo = models.CharField(max_length=10, blank=True, null=True)
@@ -540,8 +540,8 @@ class BoletaInscripcion(models.Model):
     ci_estudiante = models.IntegerField(blank=True, null=True)
     gestion = models.CharField(max_length=20, blank=True, null=True, db_comment='//anio de inscripcion')
     emitido = models.CharField(max_length=10, blank=True, null=True, db_comment='// si fue emitido si/no')
-    created = models.DateTimeField(blank=True, null=True)
-    modified = models.DateTimeField(blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    modified = models.DateTimeField(auto_now=True, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -682,8 +682,8 @@ class RequisitosInscripcion(models.Model):
     requisito = models.CharField(max_length=150, blank=True, null=True)
     tipo = models.CharField(max_length=30, blank=True, null=True)
     estado = models.CharField(max_length=30, blank=True, null=True)
-    created = models.DateTimeField(blank=True, null=True)
-    modified = models.DateTimeField(blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    modified = models.DateTimeField(auto_now=True, blank=True, null=True)
     gestion = models.CharField(max_length=20, blank=True, null=True)
 
     class Meta:

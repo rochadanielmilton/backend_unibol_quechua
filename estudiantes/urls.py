@@ -21,6 +21,8 @@ urlpatterns = [
     path('subirNota/<int:ci_estudiante>/', views.subirNota, name='subirNota'),   
     path('formularioAdmision/<int:ci_estudiante>/', views.formularioAdmision, name='formularioAdmision'),
     path('obtenerCertificacionGestionAnterior/<int:ci_estudiante>/', views.obtenerCertificacionGestionAnterior, name='obtenerCertificacionGestionAnterior'),  
+    path('ObtenerHitorialAcademico2/<int:ci_estudiante>/', views.ObtenerHitorialAcademico2, name='ObtenerHitorialAcademico2'),
+    
     
     #path('actualizarNotas/', views.ActualizarNotas, name='actualizarNotas'),
     

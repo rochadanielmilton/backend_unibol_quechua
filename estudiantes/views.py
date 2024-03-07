@@ -54,7 +54,7 @@ def ObtenerHitorialAcademico(request,ci_estudiante):
                
        
         estudiante_serializer=EstudianteHistorialSerializer(estudiante.first()).data
-        asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante)
+        asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).order_by('anio_cursado')
         if asignaturas_cursadas:
             otros_datos= estadisticas_materias(ci_estudiante)
             serializer_asignaturas_cursadas=AsignaturaCursadaSerializer(asignaturas_cursadas, many=True).data
@@ -66,6 +66,50 @@ def ObtenerHitorialAcademico(request,ci_estudiante):
                     })
         else:
             return Response({"message":"El estudiante no cuenta con ninguna materia registrada"})
+    else:
+        return Response({"Message":"El ci ingresado no coincide con ningun registro"})
+
+
+@api_view(['GET'])
+def ObtenerHitorialAcademico2(request,ci_estudiante):
+    estudiante=Estudiante.objects.filter(ci_estudiante=ci_estudiante)
+    if estudiante:
+        
+        grado=VerificarGrado(ci_estudiante)
+        fecha_hora=datetime.now()
+        fecha_emision = fecha_hora.strftime("%Y-%m-%d %H:%M:%S")
+               
+        materias_tomadas=[]
+        estudiante_serializer=EstudianteHistorialSerializer(estudiante.first()).data
+        asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).order_by('anio_cursado')
+        for asignatura in asignaturas_cursadas:
+            materias_tomadas.append(asignatura.codigo_asignatura)
+            if asignatura.homologacion=='SI':
+                nombre_asignatura=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_malla_ajustada).nombre_asignatura
+                materias_tomadas.append(nombre_asignatura)
+                
+            elif asignatura.homologacion=='NO' and asignatura.malla_aplicada=='2018':
+                nombre_asignatura=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_asignatura).asignatura_malla_2018
+                materias_tomadas.append(nombre_asignatura)
+            print("------------",asignatura.codigo_asignatura,' = ',nombre_asignatura)
+        # if asignaturas_cursadas:
+        #     otros_datos= estadisticas_materias(ci_estudiante)
+        #     serializer_asignaturas_cursadas=AsignaturaCursadaSerializer(asignaturas_cursadas, many=True).data
+        #     return Response({"estudiante":estudiante_serializer,
+        #             "grado":grado,
+        #             "fecha_emision":fecha_emision,
+        #             "datos":serializer_asignaturas_cursadas,
+        #             "otros_datos":otros_datos
+        #             })
+        # else:
+        #     return Response({"message":"El estudiante no cuenta con ninguna materia registrada"})
+        
+        return Response({"estudiante":estudiante_serializer,
+                     "grado":grado,
+                     "fecha_emision":fecha_emision,
+                     #"datos":serializer_asignaturas_cursadas,
+                     #"otros_datos":otros_datos
+                     })
     else:
         return Response({"Message":"El ci ingresado no coincide con ningun registro"})
 

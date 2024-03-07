@@ -18,7 +18,7 @@ class EstudianteView(viewsets.ModelViewSet):
 #=========================LISTA DE ESTUDIANTE PARA INSCRIPCION========================================
 @api_view(['GET']) 
 def ObtenerEstudiantesInscripcion(request):
-    estudiantes=Estudiante.objects.filter(baja='no').order_by('numero_registro')
+    estudiantes=Estudiante.objects.filter(baja='no',estado='habilitado').order_by('numero_registro')
     estudiante_serializer=EstudianteInscripcionSerializer(estudiantes, many=True).data
     ultimo_año=str(datetime.now().year)
     if estudiantes:
@@ -450,12 +450,14 @@ def inscripcionParaDefensa(request,ci_estudiante):
         estudiante=Estudiante.objects.get(ci_estudiante=ci_estudiante)
         numero_archivo=obtenerNumeroArchivo(ci_estudiante)    
         materias=culminacionMaterias(ci_estudiante)
-        print("--------------",materias)
+        numero_boleta=GenerarNuevaBoletaEgresados(ci_estudiante)
+        #print("--------------",materias)
         if materias:
             estudiante_serializer=EstudianteInscripcionSerializer(estudiante).data
             return Response({"estudiantes": estudiante_serializer,                         
                          "anio_actual":ultimo_año,
                          "numero_archivo":numero_archivo,
+                         "numero_boleta":numero_boleta,
                          "fecha_emision":fecha_emision})       
         else:
             return Response({"message":"El estudiante cuenta con materias por cursar"})
@@ -489,4 +491,18 @@ def culminacionMaterias(ci_estudiante):
         return False
     else:
         return True
-   
+
+def GenerarNuevaBoletaEgresados(ci_estudiante):
+    boleta_estudiante=BoletaInscripcion.objects.filter(ci_estudiante=ci_estudiante).first()
+    
+    if boleta_estudiante:
+        print("------------",boleta_estudiante.numero_boleta)
+        return boleta_estudiante.numero_boleta
+    else:
+        ultimo_numero=BoletaInscripcion.objects.last()
+        numero_boleta=ultimo_numero.numero_boleta+1
+        gestion=datetime.now().year
+        nuevo_numero_boleta_str = str(ultimo_numero.numero_boleta).zfill(4)
+        BoletaInscripcion.objects.create(numero_boleta=numero_boleta,ci_estudiante=ci_estudiante,gestion=gestion,emitido='si')
+        print("------------",nuevo_numero_boleta_str)
+        return nuevo_numero_boleta_str
