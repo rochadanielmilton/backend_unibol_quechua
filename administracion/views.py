@@ -18,7 +18,7 @@ class EstudianteView(viewsets.ModelViewSet):
 #=========================LISTA DE ESTUDIANTE PARA INSCRIPCION========================================
 @api_view(['GET']) 
 def ObtenerEstudiantesInscripcion(request):
-    estudiantes=Estudiante.objects.filter(baja='no',estado='habilitado').order_by('numero_registro')
+    estudiantes=Estudiante.objects.filter(baja='no',estado='habilitado').order_by('-numero_registro')
     estudiante_serializer=EstudianteInscripcionSerializer(estudiantes, many=True).data
     ultimo_año=str(datetime.now().year)
     if estudiantes:
