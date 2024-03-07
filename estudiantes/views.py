@@ -84,14 +84,18 @@ def ObtenerHitorialAcademico2(request,ci_estudiante):
         asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).order_by('anio_cursado')
         for asignatura in asignaturas_cursadas:
             materias_tomadas.append(asignatura.codigo_asignatura)
-            if asignatura.homologacion=='SI':
+            if asignatura.malla_aplicada=='2018' and asignatura.homologacion=='SI':
                 nombre_asignatura=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_malla_ajustada).nombre_asignatura
                 materias_tomadas.append(nombre_asignatura)
                 
-            elif asignatura.homologacion=='NO' and asignatura.malla_aplicada=='2018':
+            elif asignatura.malla_aplicada=='2018'and  asignatura.homologacion=='NO':
                 nombre_asignatura=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_asignatura).asignatura_malla_2018
                 materias_tomadas.append(nombre_asignatura)
+            elif asignatura.malla_aplicada=='2023':
+                nombre_asignatura=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_asignatura).nombre_asignatura
+                materias_tomadas.append(nombre_asignatura)
             print("------------",asignatura.codigo_asignatura,' = ',nombre_asignatura)
+
         # if asignaturas_cursadas:
         #     otros_datos= estadisticas_materias(ci_estudiante)
         #     serializer_asignaturas_cursadas=AsignaturaCursadaSerializer(asignaturas_cursadas, many=True).data
