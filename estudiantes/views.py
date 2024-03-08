@@ -94,7 +94,10 @@ def ObtenerHitorialAcademico2(request,ci_estudiante):
                 auxiliar.append((materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1)
                 auxiliar.append(asignatura.id_nota.nota_num_final)
                 auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
-                auxiliar.append(asignatura.homologacion)
+                if asignatura.convalidacion:
+                    auxiliar.append('CONV.HOMOLOGADO')
+                else:
+                    auxiliar.append(asignatura.homologacion)
                 materias_tomadas.append(auxiliar)
                 #print(asignatura.anio_cursado," - ",asignatura.codigo_malla_ajustada," = ",materia.nombre_asignatura," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
                 
@@ -119,7 +122,10 @@ def ObtenerHitorialAcademico2(request,ci_estudiante):
                 auxiliar.append((materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1)
                 auxiliar.append(asignatura.id_nota.nota_num_final)
                 auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
-                auxiliar.append("Segun RM 0155/2023")
+                if asignatura.convalidacion:
+                    auxiliar.append('CONV.Segun RM 0155/2023')
+                else:
+                    auxiliar.append("Segun RM 0155/2023")
                 materias_tomadas.append(auxiliar)
                 #print(asignatura.anio_cursado," - ",asignatura.codigo_asignatura," = ",materia.nombre_asignatura," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
 
@@ -166,7 +172,7 @@ def estadisticas_materias(ci_estudiante):
         promedio_aprobadas_redondeado=0
 
         # Obtener estadísticas de todas las materias cursadas
-    asignaturas_todas = AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).exclude(homologacion='NO',malla_aplicada='2018')
+    asignaturas_todas = AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).exclude(homologacion='NO',malla_aplicada='2018').exclude(estado_gestion_espaniol='ABANDONO')
     if asignaturas_todas:
         cantidad_todas = asignaturas_todas.count()
         print("-------", cantidad_todas)
