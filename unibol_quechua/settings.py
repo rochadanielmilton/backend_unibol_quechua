@@ -55,6 +55,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
 ]
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',  #  autenticación basada en sesiones
+        'rest_framework_simplejwt.authentication.JWTAuthentication',  #  tokens JWT
+    ],
+}
 
 ROOT_URLCONF = 'unibol_quechua.urls'
 

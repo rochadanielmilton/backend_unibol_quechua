@@ -1,5 +1,6 @@
 from django.urls import path,include
 from rest_framework.routers import DefaultRouter
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import *
 from.import views
 
@@ -16,7 +17,9 @@ router.register(r'notaEstudiante',NotaEstudianteView, basename='notaEstudiante')
 
 urlpatterns = [
     path('',include(router.urls)),
-    path('obtenerAsignaturasCursadas/<int:ci_estudiante>/', views.ObtenerHitorialAcademico, name='obtenerAsignaturasCursadas'),
+    path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    #path('obtenerAsignaturasCursadas/<int:ci_estudiante>/', views.ObtenerHitorialAcademico, name='obtenerAsignaturasCursadas'),
     path('obtenerAsignaturasAprobadas/<int:ci_estudiante>/', views.ObtenerMateriasAprobadas, name='obtenerAsignaturasAprobadas'),
     path('subirNota/<int:ci_estudiante>/', views.subirNota, name='subirNota'),   
     path('formularioAdmision/<int:ci_estudiante>/', views.formularioAdmision, name='formularioAdmision'),

@@ -3,7 +3,8 @@ from rest_framework import viewsets
 from parametros.models import *
 from .serializers import *
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from datetime import datetime
 from django.db.models import Avg, Count, F
 from rest_framework import status
@@ -13,6 +14,7 @@ class AsignaturaView(viewsets.ModelViewSet):
     queryset=Asignatura.objects.all()
     serializer_class=AsignaturaSerializer
 
+#@permission_classes([IsAuthenticated])
 class EstudianteView(viewsets.ModelViewSet):
     queryset = Estudiante.objects.filter(estado='habilitado',baja='no').order_by('anio_ingreso')   
     serializer_class = EstudianteSerializer
@@ -43,31 +45,31 @@ class NotaEstudianteView(viewsets.ModelViewSet):
     
 
 
-@api_view(['GET'])
-def ObtenerHitorialAcademico(request,ci_estudiante):
-    estudiante=Estudiante.objects.filter(ci_estudiante=ci_estudiante)
-    if estudiante:
+# @api_view(['GET'])
+# def ObtenerHitorialAcademico(request,ci_estudiante):
+#     estudiante=Estudiante.objects.filter(ci_estudiante=ci_estudiante)
+#     if estudiante:
         
-        grado=VerificarGrado(ci_estudiante)
-        fecha_hora=datetime.now()
-        fecha_emision = fecha_hora.strftime("%Y-%m-%d %H:%M:%S")
+#         grado=VerificarGrado(ci_estudiante)
+#         fecha_hora=datetime.now()
+#         fecha_emision = fecha_hora.strftime("%Y-%m-%d %H:%M:%S")
                
        
-        estudiante_serializer=EstudianteHistorialSerializer(estudiante.first()).data
-        asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).order_by('anio_cursado')
-        if asignaturas_cursadas:
-            otros_datos= estadisticas_materias(ci_estudiante)
-            serializer_asignaturas_cursadas=AsignaturaCursadaSerializer(asignaturas_cursadas, many=True).data
-            return Response({"estudiante":estudiante_serializer,
-                    "grado":grado,
-                    "fecha_emision":fecha_emision,
-                    "datos":serializer_asignaturas_cursadas,
-                    "otros_datos":otros_datos
-                    })
-        else:
-            return Response({"message":"El estudiante no cuenta con ninguna materia registrada"})
-    else:
-        return Response({"Message":"El ci ingresado no coincide con ningun registro"})
+#         estudiante_serializer=EstudianteHistorialSerializer(estudiante.first()).data
+#         asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).order_by('anio_cursado')
+#         if asignaturas_cursadas:
+#             otros_datos= estadisticas_materias(ci_estudiante)
+#             serializer_asignaturas_cursadas=AsignaturaCursadaSerializer(asignaturas_cursadas, many=True).data
+#             return Response({"estudiante":estudiante_serializer,
+#                     "grado":grado,
+#                     "fecha_emision":fecha_emision,
+#                     "datos":serializer_asignaturas_cursadas,
+#                     "otros_datos":otros_datos
+#                     })
+#         else:
+#             return Response({"message":"El estudiante no cuenta con ninguna materia registrada"})
+#     else:
+#         return Response({"Message":"El ci ingresado no coincide con ningun registro"})
 
 
 @api_view(['GET'])
@@ -127,20 +129,7 @@ def ObtenerHitorialAcademico2(request,ci_estudiante):
                 else:
                     auxiliar.append("Segun RM 0155/2023")
                 materias_tomadas.append(auxiliar)
-                #print(asignatura.anio_cursado," - ",asignatura.codigo_asignatura," = ",materia.nombre_asignatura," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
-
-        # if asignaturas_cursadas:
-        #    
-        #     serializer_asignaturas_cursadas=AsignaturaCursadaSerializer(asignaturas_cursadas, many=True).data
-        #     return Response({"estudiante":estudiante_serializer,
-        #             "grado":grado,
-        #             "fecha_emision":fecha_emision,
-        #             "datos":serializer_asignaturas_cursadas,
-        #             "otros_datos":otros_datos
-        #             })
-        # else:
-        #     return Response({"message":"El estudiante no cuenta con ninguna materia registrada"})
-        
+          
         return Response({"estudiante":estudiante_serializer,
                      "grado":grado,
                      "fecha_emision":fecha_emision,
