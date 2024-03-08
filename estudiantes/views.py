@@ -82,6 +82,7 @@ def ObtenerHitorialAcademico2(request,ci_estudiante):
         materias_tomadas=[]
         estudiante_serializer=EstudianteHistorialSerializer(estudiante).data
         asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).order_by('anio_cursado')
+        otros_datos= estadisticas_materias(ci_estudiante)
         for asignatura in asignaturas_cursadas:
             auxiliar=[]
             if asignatura.malla_aplicada=='2018' and asignatura.homologacion=='SI':
@@ -95,7 +96,7 @@ def ObtenerHitorialAcademico2(request,ci_estudiante):
                 auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
                 auxiliar.append(asignatura.homologacion)
                 materias_tomadas.append(auxiliar)
-                print(asignatura.anio_cursado," - ",asignatura.codigo_malla_ajustada," = ",materia.nombre_asignatura," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
+                #print(asignatura.anio_cursado," - ",asignatura.codigo_malla_ajustada," = ",materia.nombre_asignatura," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
                 
             # elif asignatura.malla_aplicada=='2018'and  asignatura.homologacion=='NO':
             #     auxiliar.append(asignatura.anio_cursado)
@@ -118,12 +119,12 @@ def ObtenerHitorialAcademico2(request,ci_estudiante):
                 auxiliar.append((materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1)
                 auxiliar.append(asignatura.id_nota.nota_num_final)
                 auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
-                auxiliar.append(asignatura.homologacion)
+                auxiliar.append("Segun RM 0155/2023")
                 materias_tomadas.append(auxiliar)
-                print(asignatura.anio_cursado," - ",asignatura.codigo_asignatura," = ",materia.nombre_asignatura," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
+                #print(asignatura.anio_cursado," - ",asignatura.codigo_asignatura," = ",materia.nombre_asignatura," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
 
         # if asignaturas_cursadas:
-        #     otros_datos= estadisticas_materias(ci_estudiante)
+        #    
         #     serializer_asignaturas_cursadas=AsignaturaCursadaSerializer(asignaturas_cursadas, many=True).data
         #     return Response({"estudiante":estudiante_serializer,
         #             "grado":grado,
@@ -137,9 +138,10 @@ def ObtenerHitorialAcademico2(request,ci_estudiante):
         return Response({"estudiante":estudiante_serializer,
                      "grado":grado,
                      "fecha_emision":fecha_emision,
-                     "datos":materias_tomadas
+                     "datos":materias_tomadas,
+                     "otros_datos":otros_datos
                      #"datos":serializer_asignaturas_cursadas,
-                     #"otros_datos":otros_datos
+                     
                      })
     else:
         return Response({"Message":"El ci ingresado no coincide con ningun registro"})
@@ -147,13 +149,16 @@ def ObtenerHitorialAcademico2(request,ci_estudiante):
 
 def estadisticas_materias(ci_estudiante):
     # Filtrar las asignaturas cursadas
-    asignaturas_aprobadas = AsignaturaCursada.objects.filter(id_nota__resultado_gestion_espaniol='APR.',ci_estudiante=ci_estudiante)
-    if asignaturas_aprobadas: 
+    asignaturas_aprobadas = AsignaturaCursada.objects.filter(id_nota__resultado_gestion_espaniol='APR.',ci_estudiante=ci_estudiante).exclude(homologacion='NO',malla_aplicada='2018')
+    if asignaturas_aprobadas:
         cantidad_aprobadas = asignaturas_aprobadas.count()
+        print("-------", cantidad_aprobadas)
         # Obtener el promedio de las notas finales de las asignaturas aprobadas
         promedio_aprobadas = asignaturas_aprobadas.aggregate(Avg('id_nota__nota_num_final'))['id_nota__nota_num_final__avg']
+        
         if promedio_aprobadas:
             promedio_aprobadas_redondeado=round(promedio_aprobadas,2)
+            print("-------", promedio_aprobadas_redondeado)
         else:
             promedio_aprobadas_redondeado=0
     else:
@@ -161,13 +166,15 @@ def estadisticas_materias(ci_estudiante):
         promedio_aprobadas_redondeado=0
 
         # Obtener estadísticas de todas las materias cursadas
-    asignaturas_todas = AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante)
+    asignaturas_todas = AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).exclude(homologacion='NO',malla_aplicada='2018')
     if asignaturas_todas:
         cantidad_todas = asignaturas_todas.count()
+        print("-------", cantidad_todas)
         promedio_todas = asignaturas_todas.aggregate(Avg('id_nota__nota_num_final'))['id_nota__nota_num_final__avg']  
         
         if promedio_todas:
             promedio_todas_redondedado=round(promedio_todas,2)
+            print("-------", promedio_todas_redondedado)
         else:
             promedio_todas_redondedado=0
     else:
@@ -191,9 +198,9 @@ def estadisticas_materias(ci_estudiante):
 #     return Response({"message":"exitoso"})
 
 def VerificarGrado(ci_estudiante):
-    asignaturas_cursadas = AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).values_list('codigo_asignatura', flat=True)
+    asignaturas_cursadas = AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).exclude(estado_gestion_espaniol='ABANDONO').values_list('codigo_asignatura', flat=True)
     asignaturas_licenciatura = AsignaturasLicenciatura.objects.values_list('codigo_asignatura', flat=True)
-    
+    print("--------",asignaturas_cursadas)
     resultado = 'TÉCNICO SUPERIOR'
 
     for asignatura_cursada in asignaturas_cursadas:
