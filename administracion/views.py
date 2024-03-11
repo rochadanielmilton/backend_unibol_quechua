@@ -78,6 +78,9 @@ def inscribirEstudiante(request):
 
             anio_aterior=str(datetime.now().year-1)
             lista_asignaturas_anio_anterior=AsignaturaCursada.objects.filter(anio_cursado=anio_aterior,ci_estudiante=ci_estudiante).order_by('codigo_asignatura')
+            if lista_asignaturas_anio_anterior:
+                anio_aterior=str(datetime.now().year-2)
+                lista_asignaturas_anio_anterior=AsignaturaCursada.objects.filter(anio_cursado=anio_aterior,ci_estudiante=ci_estudiante).order_by('codigo_asignatura')
             lista_asignaturas_anio_anterior_serializer=AsignaturaCursadaAnioAnteriorSerializer(lista_asignaturas_anio_anterior,many=True).data
             #print("------------------",lista_asignaturas_anio_anterior_serializer)
 
@@ -385,8 +388,12 @@ def reimprimirInscripcion(request,ci_estudiante):
     numero_boleto=BoletaInscripcion.objects.filter(ci_estudiante=ci_estudiante).first()
     asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante,anio_cursado=ultimo_año)
     asignaturas_cursadas_serializer=AsignaturasCursadasSerializerReImpresion(asignaturas_cursadas,many=True).data
-
+    
     lista_asignaturas_anio_anterior=AsignaturaCursada.objects.filter(anio_cursado=anio_aterior,ci_estudiante=ci_estudiante).order_by('codigo_asignatura')
+    if not lista_asignaturas_anio_anterior:
+        anio_aterior=str(datetime.now().year-2)
+        #ultimo_año=str(datetime.now().year)
+        lista_asignaturas_anio_anterior=AsignaturaCursada.objects.filter(anio_cursado=anio_aterior,ci_estudiante=ci_estudiante).order_by('codigo_asignatura')
     lista_asignaturas_anio_anterior_serializer=AsignaturaCursadaAnioAnteriorSerializer(lista_asignaturas_anio_anterior,many=True).data
     
 

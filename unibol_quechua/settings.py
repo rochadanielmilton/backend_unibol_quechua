@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -58,8 +59,15 @@ MIDDLEWARE = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',  #  autenticación basada en sesiones
-        'rest_framework_simplejwt.authentication.JWTAuthentication',  #  tokens JWT
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.TokenAuthentication',  #  tokens JWT
     ],
+}
+
+# Configuración de JWT
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # Tiempo de vida del token de acceso
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),     # Tiempo de vida del token de actualización
 }
 
 ROOT_URLCONF = 'unibol_quechua.urls'

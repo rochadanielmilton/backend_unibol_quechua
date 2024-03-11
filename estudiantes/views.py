@@ -4,6 +4,7 @@ from parametros.models import *
 from .serializers import *
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from datetime import datetime
 from django.db.models import Avg, Count, F
@@ -16,6 +17,8 @@ class AsignaturaView(viewsets.ModelViewSet):
 
 #@permission_classes([IsAuthenticated])
 class EstudianteView(viewsets.ModelViewSet):
+    # authentication_classes = [JWTAuthentication]
+    # permission_classes = [IsAuthenticated]
     queryset = Estudiante.objects.filter(estado='habilitado',baja='no').order_by('anio_ingreso')   
     serializer_class = EstudianteSerializer
 
@@ -311,5 +314,31 @@ def obtenerCertificacionGestionAnterior(request,ci_estudiante):
                     })
         else:
             return Response({"message":"El estudiante no cuenta con ninguna materia registrada"})
+    else:
+        return Response({"Message":"El ci ingresado no coincide con ningun registro"})
+    
+@api_view(['GET'])
+def obtenerCertificacionPorGestion(request,ci_estudiante,anio):
+    estudiante=Estudiante.objects.filter(ci_estudiante=ci_estudiante)
+    if estudiante:
+        
+        grado=VerificarGrado(ci_estudiante)
+        fecha_hora=datetime.now()
+        fecha_emision = fecha_hora.strftime("%Y-%m-%d %H:%M:%S")
+        #anio_anterior = str(datetime.now().year-1)
+               
+       
+        estudiante_serializer=EstudianteHistorialSerializer(estudiante.first()).data
+        asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante,anio_cursado=anio ).order_by('codigo_asignatura')
+        if asignaturas_cursadas:
+            #otros_datos= estadisticas_materias(ci_estudiante)
+            serializer_asignaturas_cursadas=AsignaturaCursadaSerializer(asignaturas_cursadas, many=True).data
+            return Response({"estudiante":estudiante_serializer,
+                    "grado":grado,
+                    "fecha_emision":fecha_emision,
+                    "datos":serializer_asignaturas_cursadas                    
+                    })
+        else:
+            return Response({"message":"El estudiante no cuenta con ninguna materia registrada en esa gestión"})
     else:
         return Response({"Message":"El ci ingresado no coincide con ningun registro"})
