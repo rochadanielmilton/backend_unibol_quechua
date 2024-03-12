@@ -5,7 +5,8 @@ from.import views
 
 urlpatterns = [
   
-    path('obtenerEstudiantesInscripcion/', views.ObtenerEstudiantesInscripcion, name='obtenerEstudiantesInscripcion'),
+    path('obtenerEstudiantesInscripcion/', views.ObtenerEstudiantesRegularesInscripcion, name='obtenerEstudiantesInscripcion'),
+    path('ObtenerEstudiantesNuevosInscripcion/', views.ObtenerEstudiantesNuevosInscripcion, name='ObtenerEstudiantesNuevosInscripcion'),
     path('obtenerAsignaturasNoCursadas/<int:ci_estudiante>/', views.ObenerAsignaturasNoCursadas, name='obtenerAsignaturasNoCursadas'),
     path('inscribirEstudiante/', views.inscribirEstudiante, name='inscribirEstudiante'),
     path('obtenerPostulates/', views.ObtenerPostulates, name='obtenerPostulates'),

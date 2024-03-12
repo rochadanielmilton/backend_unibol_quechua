@@ -20,14 +20,7 @@ class EstudianteRegularesView(viewsets.ModelViewSet):
     # authentication_classes = [JWTAuthentication]
     # permission_classes = [IsAuthenticated]
     anio_actual=str(datetime.now().year)
-    queryset = Estudiante.objects.filter(estado='habilitado',baja='no').exclude(anio_ingreso=anio_actual).order_by('anio_ingreso')   
-    serializer_class = EstudianteSerializer
-
-class EstudiantesNuevosView(viewsets.ModelViewSet):
-    # authentication_classes = [JWTAuthentication]
-    # permission_classes = [IsAuthenticated]
-    anio_actual=str(datetime.now().year)
-    queryset = Estudiante.objects.filter(estado='habilitado',baja='no',anio_ingreso=anio_actual).order_by('anio_ingreso')   
+    queryset = Estudiante.objects.filter(estado='habilitado',baja='no').order_by('anio_ingreso')   
     serializer_class = EstudianteSerializer
 
 class DocumentacionEstudianteView(viewsets.ModelViewSet):

@@ -17,8 +17,19 @@ class EstudianteView(viewsets.ModelViewSet):
 
 #=========================LISTA DE ESTUDIANTE PARA INSCRIPCION========================================
 @api_view(['GET']) 
-def ObtenerEstudiantesInscripcion(request):
+def ObtenerEstudiantesRegularesInscripcion(request):
     estudiantes=Estudiante.objects.filter(baja='no',estado='habilitado').order_by('-numero_registro')
+    estudiante_serializer=EstudianteInscripcionSerializer(estudiantes, many=True).data
+    ultimo_año=str(datetime.now().year)
+    if estudiantes:
+        return Response({"estudiantes": estudiante_serializer,
+                         "anio_actual":ultimo_año})       
+    else:
+        return Response({"message":"error al optener los estudantes"},status=status.HTTP_400_BAD_REQUEST)
+@api_view(['GET']) 
+def ObtenerEstudiantesNuevosInscripcion(request):
+    anio_actual=str(datetime.now().year)
+    estudiantes=Estudiante.objects.filter(baja='no',estado='habilitado',anio_ingreso=anio_actual).order_by('-numero_registro')
     estudiante_serializer=EstudianteInscripcionSerializer(estudiantes, many=True).data
     ultimo_año=str(datetime.now().year)
     if estudiantes:

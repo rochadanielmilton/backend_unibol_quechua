@@ -1,16 +1,19 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from .models import *
 from .serializers import *
 from datetime import datetime
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 
 class AsignaturaView(viewsets.ModelViewSet):
     queryset=Asignatura.objects.all()
     serializer_class=AsignaturaSerializer
     
+@permission_classes([IsAuthenticated])    
 class CarreraView(viewsets.ModelViewSet):
     queryset = Carrera.objects.all()    
     serializer_class = CarreraSerializer
