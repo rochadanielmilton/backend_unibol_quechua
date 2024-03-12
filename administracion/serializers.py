@@ -1,5 +1,16 @@
 from rest_framework import serializers
 from parametros.models import*
+from django.contrib.auth.models import User,Permission
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    pass
+class EmptySerializer(serializers.Serializer):
+    pass
+class CustomUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model =User
+        fields=('username','email','first_name','last_name')
 
 # class EstudianteSerializer(serializers.ModelSerializer):
 #     nombre_carrera=serializers.SerializerMethodField()

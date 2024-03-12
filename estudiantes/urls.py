@@ -5,7 +5,8 @@ from .views import *
 from.import views
 
 router = DefaultRouter()
-router.register(r'estudiantes',EstudianteView, basename='estudiante')
+router.register(r'estudiantes',EstudianteRegularesView, basename='estudiante')
+router.register(r'estudiantesNuevos',EstudiantesNuevosView, basename='estudiantesNuevos')
 router.register(r'documentacionEstudiante',DocumentacionEstudianteView, basename='documentacionEstudiante')
 router.register(r'organizacion',OrganizacionView, basename='organizacion')
 router.register(r'responsableEstudiante',ResponsableEstudianteView, basename='responsableEstudiante')

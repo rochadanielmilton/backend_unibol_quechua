@@ -9,11 +9,11 @@ from django.db.models import Avg, Count, F,Max
 from rest_framework import status
 from django.db import transaction
 from django.core.exceptions import ObjectDoesNotExist
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 class EstudianteView(viewsets.ModelViewSet):
     queryset = Estudiante.objects.all()    
     serializer_class = EstudianteSerializer
-
 
 #=========================LISTA DE ESTUDIANTE PARA INSCRIPCION========================================
 @api_view(['GET']) 
@@ -78,7 +78,7 @@ def inscribirEstudiante(request):
 
             anio_aterior=str(datetime.now().year-1)
             lista_asignaturas_anio_anterior=AsignaturaCursada.objects.filter(anio_cursado=anio_aterior,ci_estudiante=ci_estudiante).order_by('codigo_asignatura')
-            if lista_asignaturas_anio_anterior:
+            if not lista_asignaturas_anio_anterior:
                 anio_aterior=str(datetime.now().year-2)
                 lista_asignaturas_anio_anterior=AsignaturaCursada.objects.filter(anio_cursado=anio_aterior,ci_estudiante=ci_estudiante).order_by('codigo_asignatura')
             lista_asignaturas_anio_anterior_serializer=AsignaturaCursadaAnioAnteriorSerializer(lista_asignaturas_anio_anterior,many=True).data
