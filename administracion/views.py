@@ -30,7 +30,7 @@ def login(request):
         # Generar un token JWT para el usuario autenticado
         token = AccessToken.for_user(user)
         # Devolver el token y el objeto de usuario autenticado en formato JSON
-        return JsonResponse({'token': str(token), 'user': user.username})
+        return JsonResponse({'token': str(token), 'user': user.username,'id':user.id})
     else:
         # Las credenciales son inválidas
         return JsonResponse({'error': 'Credenciales inválidas'}, status=401)

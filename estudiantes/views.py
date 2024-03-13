@@ -15,7 +15,7 @@ class AsignaturaView(viewsets.ModelViewSet):
     queryset=Asignatura.objects.all()
     serializer_class=AsignaturaSerializer
 
-@permission_classes([IsAuthenticated])
+#@permission_classes([IsAuthenticated])
 class EstudianteRegularesView(viewsets.ModelViewSet):
     # authentication_classes = [JWTAuthentication]
     # permission_classes = [IsAuthenticated]

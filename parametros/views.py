@@ -13,7 +13,7 @@ class AsignaturaView(viewsets.ModelViewSet):
     queryset=Asignatura.objects.all()
     serializer_class=AsignaturaSerializer
 
-@permission_classes([IsAuthenticated])    
+#@permission_classes([IsAuthenticated])    
 class CarreraView(viewsets.ModelViewSet):
     queryset = Carrera.objects.all()    
     serializer_class = CarreraSerializer
