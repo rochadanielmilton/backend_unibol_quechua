@@ -4,7 +4,7 @@ from .views import *
 from.import views
 
 urlpatterns = [
-    path('login/', views.login, name='login'),
+    #path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),    
     path('obtenerEstudiantesInscripcion/', views.ObtenerEstudiantesRegularesInscripcion, name='obtenerEstudiantesInscripcion'),
     path('ObtenerEstudiantesNuevosInscripcion/', views.ObtenerEstudiantesNuevosInscripcion, name='ObtenerEstudiantesNuevosInscripcion'),
