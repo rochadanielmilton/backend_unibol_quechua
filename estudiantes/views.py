@@ -87,7 +87,7 @@ def ObtenerHitorialAcademico2(request,ci_estudiante):
                
         materias_tomadas=[]
         estudiante_serializer=EstudianteHistorialSerializer(estudiante).data
-        asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).order_by('anio_cursado')
+        asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).order_by('anio_cursado').order_by('codigo_asignatura')
         otros_datos= estadisticas_materias(ci_estudiante)
         for asignatura in asignaturas_cursadas:
             auxiliar=[]
@@ -343,3 +343,30 @@ def obtenerCertificacionPorGestion(request,ci_estudiante,anio):
             return Response({"message":"El estudiante no cuenta con ninguna materia registrada en esa gestión"})
     else:
         return Response({"Message":"El ci ingresado no coincide con ningun registro"})
+    
+@api_view(['GET'])
+def ObtenerEducacionPrimaria(request,ci_estudiante):
+    educacion_primaria=EducacionPrimaria.objects.filter(ci_estudiante=ci_estudiante).first()
+    if educacion_primaria:
+        educacion_primaria_serializer=EducacionPrimariaSerializer(educacion_primaria).data
+    else:
+        educacion_primaria_serializer={}
+    return Response(educacion_primaria_serializer)
+
+@api_view(['GET'])
+def ObtenerResponsable(request,ci_estudiante):
+    responsable=ResponsableEstudiante.objects.filter(ci_estudiante=ci_estudiante).first()
+    if responsable:
+       responsable_serializer=ResponsableEstudianteSerializer(responsable).data
+    else:
+       responsable_serializer={}
+    return Response(responsable_serializer)
+
+@api_view(['GET'])
+def ObtenerOrganizacion(request,ci_estudiante):
+    organizacion=Organizacion.objects.filter(ci_estudiante=ci_estudiante).first()
+    if organizacion:
+        organizacion_serializer=OrganizacionSerializer(organizacion).data
+    else:
+        organizacion_serializer={}
+    return Response(organizacion_serializer)

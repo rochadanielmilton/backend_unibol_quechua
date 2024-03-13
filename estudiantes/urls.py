@@ -26,6 +26,10 @@ urlpatterns = [
     path('obtenerCertificacionGestionAnterior/<int:ci_estudiante>/', views.obtenerCertificacionGestionAnterior, name='obtenerCertificacionGestionAnterior'), 
     path('obtenerCertificacionPorGestion/<int:ci_estudiante>/<str:anio>/', views.obtenerCertificacionPorGestion, name='obtenerCertificacionPorGestion'), 
     path('ObtenerHitorialAcademico2/<int:ci_estudiante>/', views.ObtenerHitorialAcademico2, name='ObtenerHitorialAcademico2'),
+
+    path('ObtenerEducacionPrimaria/<int:ci_estudiante>/', views.ObtenerEducacionPrimaria, name='ObtenerEducacionPrimaria'),
+    path('ObtenerResponsable/<int:ci_estudiante>/', views.ObtenerResponsable, name='ObtenerResponsable'),
+    path('ObtenerOrganizacion/<int:ci_estudiante>/', views.ObtenerOrganizacion, name='ObtenerOrganizacion'),
     
     
     
