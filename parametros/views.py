@@ -12,7 +12,7 @@ from rest_framework.permissions import IsAuthenticated
 class AsignaturaView(viewsets.ModelViewSet):
     queryset=Asignatura.objects.all()
     serializer_class=AsignaturaSerializer
-    
+
 @permission_classes([IsAuthenticated])    
 class CarreraView(viewsets.ModelViewSet):
     queryset = Carrera.objects.all()    

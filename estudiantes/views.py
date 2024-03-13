@@ -15,7 +15,7 @@ class AsignaturaView(viewsets.ModelViewSet):
     queryset=Asignatura.objects.all()
     serializer_class=AsignaturaSerializer
 
-#@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])
 class EstudianteRegularesView(viewsets.ModelViewSet):
     # authentication_classes = [JWTAuthentication]
     # permission_classes = [IsAuthenticated]
@@ -317,7 +317,7 @@ def obtenerCertificacionGestionAnterior(request,ci_estudiante):
             return Response({"message":"El estudiante no cuenta con ninguna materia registrada"})
     else:
         return Response({"Message":"El ci ingresado no coincide con ningun registro"})
-    
+ 
 @api_view(['GET'])
 def obtenerCertificacionPorGestion(request,ci_estudiante,anio):
     estudiante=Estudiante.objects.filter(ci_estudiante=ci_estudiante)

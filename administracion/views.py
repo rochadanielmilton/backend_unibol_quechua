@@ -10,6 +10,55 @@ from rest_framework import status
 from django.db import transaction
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.tokens import AccessToken
+from django.contrib.auth.models import User, Permission
+from django.contrib.auth import authenticate, login,logout
+from django.http import JsonResponse
+from rest_framework_simplejwt.tokens import AccessToken
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework_simplejwt.tokens import RefreshToken
+
+@csrf_exempt
+@api_view(['POST']) 
+def login(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
+    user = authenticate(username=username, password=password)
+
+    if user is not None:
+        # El usuario se autenticó correctamente
+        # Generar un token JWT para el usuario autenticado
+        token = AccessToken.for_user(user)
+        # Devolver el token y el objeto de usuario autenticado en formato JSON
+        return JsonResponse({'token': str(token), 'user': user.username})
+    else:
+        # Las credenciales son inválidas
+        return JsonResponse({'error': 'Credenciales inválidas'}, status=401)
+# @csrf_exempt
+# @api_view(['POST'])
+# def logout(request):
+#     # Cerrar sesión del usuario
+#     logout(request)
+
+#     # Devolver una respuesta JSON
+#     return JsonResponse({'message': 'Logout exitoso'})
+@csrf_exempt
+@api_view(['POST'])
+def logout(request):
+    id_usuario = request.data.get('id')
+    user = User.objects.filter(id=id_usuario).first()
+
+    if user:
+        # Obtenemos todos los tokens de actualización asociados con el usuario
+        refresh_tokens = RefreshToken.objects.filter(user=user)
+
+        # Invalidamos cada token de actualización
+        for refresh_token in refresh_tokens:
+            refresh_token.blacklist()
+
+        return Response({'message': 'Logout exitoso'}, status=status.HTTP_200_OK)
+    else:
+        return Response({'message': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)
 
 class EstudianteView(viewsets.ModelViewSet):
     queryset = Estudiante.objects.all()    

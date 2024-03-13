@@ -4,7 +4,8 @@ from .views import *
 from.import views
 
 urlpatterns = [
-  
+    path('login/', views.login, name='login'),
+    path('logout/', views.logout, name='logout'),    
     path('obtenerEstudiantesInscripcion/', views.ObtenerEstudiantesRegularesInscripcion, name='obtenerEstudiantesInscripcion'),
     path('ObtenerEstudiantesNuevosInscripcion/', views.ObtenerEstudiantesNuevosInscripcion, name='ObtenerEstudiantesNuevosInscripcion'),
     path('obtenerAsignaturasNoCursadas/<int:ci_estudiante>/', views.ObenerAsignaturasNoCursadas, name='obtenerAsignaturasNoCursadas'),
