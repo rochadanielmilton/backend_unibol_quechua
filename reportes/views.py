@@ -15,9 +15,12 @@ from django.db.models import Max
 def EstudiantesCarreraAnio(request,codigo_carrera,anio_cursado):
     estudiante=Estudiante.objects.filter(codigo_carrera=codigo_carrera,anio_cursado=anio_cursado, inscrito_gestion='si')
     nombre_carrera=Carrera.objects.filter(codigo_carrera=codigo_carrera).first().nombre_carrera
-    numero_estudiantes=Count(estudiante)
-    estudiante_serializer=EstudianteCarreraAnioSerializer(estudiante,many=True).data
-    return Response({"año":anio_cursado,
-                     "carrera":nombre_carrera,
-                     "numero_estudiantes":numero_estudiantes,
-                     "estudiantes":estudiante_serializer})
+    if estudiante:
+        numero_estudiantes=estudiante.count()
+        estudiante_serializer=EstudianteCarreraAnioSerializer(estudiante,many=True).data
+        return Response({"año":anio_cursado,
+                        "carrera":nombre_carrera,
+                        "numero_estudiantes":numero_estudiantes,
+                        "estudiantes":estudiante_serializer})
+    else:
+        return Response({"message":"no se encontro ningun estudiante ingrese datos validos"})
