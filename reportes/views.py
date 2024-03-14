@@ -16,6 +16,7 @@ def EstudiantesCarreraAnio(request,codigo_carrera,anio_cursado):
     try:
         if codigo_carrera==0 and anio_cursado==0:
             estudiante = Estudiante.objects.filter(inscrito_gestion='si', anio_cursado__in=['PRIMER AÑO', 'SEGUNDO AÑO', 'TERCER AÑO', 'CUARTO AÑO', 'QUINTO AÑO']).order_by('anio_cursado')
+            estudiante_serializer=EstudianteCarreraAnioSerializer(estudiante,many=True).data 
             nombre_carrera='TODOS'
             numero_estudiantes=estudiante.count()
             anio_cursado='TODOS'
