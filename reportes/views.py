@@ -14,7 +14,7 @@ from django.db.models import Max
 @api_view(['GET'])
 def EstudiantesCarreraAnio(request,codigo_carrera,anio_cursado):
     try:
-        if codigo_carrera==0 and anio_cursado==0:
+        if codigo_carrera=='0' and anio_cursado=='0':
             estudiante = Estudiante.objects.filter(inscrito_gestion='si', anio_cursado__in=['PRIMER AÑO', 'SEGUNDO AÑO', 'TERCER AÑO', 'CUARTO AÑO', 'QUINTO AÑO']).order_by('anio_cursado')
             estudiante_serializer=EstudianteCarreraAnioSerializer(estudiante,many=True).data 
             nombre_carrera='TODOS'
@@ -25,7 +25,7 @@ def EstudiantesCarreraAnio(request,codigo_carrera,anio_cursado):
                             "numero_estudiantes":numero_estudiantes,
                             "estudiantes":estudiante_serializer})
     
-        if codigo_carrera!=0 and anio_cursado==0:
+        if codigo_carrera!='0' and anio_cursado=='0':
             estudiante=Estudiante.objects.filter(codigo_carrera=codigo_carrera, inscrito_gestion='si',anio_cursado__in=['PRIMER AÑO', 'SEGUNDO AÑO', 'TERCER AÑO', 'CUARTO AÑO', 'QUINTO AÑO']).order_by('anio_cursado')
             estudiante_serializer=EstudianteCarreraAnioSerializer(estudiante,many=True).data       
             nombre_carrera=Carrera.objects.filter(codigo_carrera=codigo_carrera).first().nombre_carrera
@@ -36,10 +36,13 @@ def EstudiantesCarreraAnio(request,codigo_carrera,anio_cursado):
                             "numero_estudiantes":numero_estudiantes,
                             "estudiantes":estudiante_serializer})
     
-        if codigo_carrera!=0 and anio_cursado!=0:
+        if codigo_carrera!='0' and anio_cursado!='0':
+            
             estudiante=Estudiante.objects.filter(codigo_carrera=codigo_carrera,anio_cursado=anio_cursado, inscrito_gestion='si').order_by('anio_cursado')
+            
             estudiante_serializer=EstudianteCarreraAnioSerializer(estudiante,many=True).data
             nombre_carrera=Carrera.objects.filter(codigo_carrera=codigo_carrera).first().nombre_carrera
+            print("-------------")
             numero_estudiantes=estudiante.count()
 
             return Response({"año":anio_cursado,
