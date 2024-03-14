@@ -38,11 +38,9 @@ def EstudiantesCarreraAnio(request,codigo_carrera,anio_cursado):
     
         if codigo_carrera!='0' and anio_cursado!='0':
             
-            estudiante=Estudiante.objects.filter(codigo_carrera=codigo_carrera,anio_cursado=anio_cursado, inscrito_gestion='si').order_by('anio_cursado')
-            
+            estudiante=Estudiante.objects.filter(codigo_carrera=codigo_carrera,anio_cursado=anio_cursado, inscrito_gestion='si').order_by('anio_cursado')            
             estudiante_serializer=EstudianteCarreraAnioSerializer(estudiante,many=True).data
             nombre_carrera=Carrera.objects.filter(codigo_carrera=codigo_carrera).first().nombre_carrera
-            print("-------------")
             numero_estudiantes=estudiante.count()
 
             return Response({"año":anio_cursado,
