@@ -87,7 +87,7 @@ def ObtenerHitorialAcademico2(request,ci_estudiante):
                
         materias_tomadas=[]
         estudiante_serializer=EstudianteHistorialSerializer(estudiante).data
-        asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).order_by('anio_cursado').order_by('codigo_asignatura')
+        asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).order_by('anio_cursado')
         otros_datos= estadisticas_materias(ci_estudiante)
         for asignatura in asignaturas_cursadas:
             auxiliar=[]
@@ -144,7 +144,75 @@ def ObtenerHitorialAcademico2(request,ci_estudiante):
                      })
     else:
         return Response({"Message":"El ci ingresado no coincide con ningun registro"})
-
+    
+@api_view(['GET'])
+def ObtenerHitorialAcademicoAvanceGeneral(request,ci_estudiante):
+    estudiante=Estudiante.objects.filter(ci_estudiante=ci_estudiante).first()
+    if estudiante:
+        #print("+++++++++++",estudiante.codigo_carrera)   and estudiante.codigo_carrera.codigo_carrera!='TIAL'
+        grado=VerificarGrado(ci_estudiante)
+        fecha_hora=datetime.now()
+        fecha_emision = fecha_hora.strftime("%Y-%m-%d %H:%M:%S")
+               
+        materias_tomadas=[]
+        estudiante_serializer=EstudianteHistorialSerializer(estudiante).data
+        asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).order_by('anio_cursado')
+        otros_datos= estadisticas_materias(ci_estudiante)
+        for asignatura in asignaturas_cursadas:
+            auxiliar=[]
+            if asignatura.malla_aplicada=='2018' and asignatura.homologacion=='SI':
+                auxiliar.append(asignatura.anio_cursado)
+                auxiliar.append(asignatura.codigo_malla_ajustada)
+                materia=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_malla_ajustada)             
+                auxiliar.append(materia.nombre_asignatura)
+                auxiliar.append(materia.total_horas)
+                auxiliar.append((materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1)
+                auxiliar.append(asignatura.id_nota.nota_num_final)
+                auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
+                if asignatura.convalidacion:
+                    auxiliar.append('CONV.HOMOLOGADO')
+                else:
+                    auxiliar.append(asignatura.homologacion)
+                materias_tomadas.append(auxiliar)
+                #print(asignatura.anio_cursado," - ",asignatura.codigo_malla_ajustada," = ",materia.nombre_asignatura," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
+                
+            elif asignatura.malla_aplicada=='2018'and  asignatura.homologacion=='NO':
+                auxiliar.append(asignatura.anio_cursado)
+                auxiliar.append(asignatura.codigo_asignatura)
+                materia=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_asignatura)
+                auxiliar.append(materia.asignatura_malla_2018)
+                auxiliar.append(materia.total_horas)
+                auxiliar.append((materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1)
+                auxiliar.append(asignatura.id_nota.nota_num_final)
+                auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
+                auxiliar.append(asignatura.homologacion)
+                materias_tomadas.append(auxiliar)
+            #     print(asignatura.anio_cursado," - ",asignatura.codigo_asignatura," = ",materia.asignatura_malla_2018," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
+            elif asignatura.malla_aplicada=='2023' and asignatura.estado_gestion_espaniol!='ABANDONO':
+                auxiliar.append(asignatura.anio_cursado)
+                auxiliar.append(asignatura.codigo_asignatura)
+                materia=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_asignatura)
+                auxiliar.append(materia.nombre_asignatura)
+                auxiliar.append(materia.total_horas)
+                auxiliar.append((materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1)
+                auxiliar.append(asignatura.id_nota.nota_num_final)
+                auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
+                if asignatura.convalidacion:
+                    auxiliar.append('CONV.Segun RM 0155/2023')
+                else:
+                    auxiliar.append("Segun RM 0155/2023")
+                materias_tomadas.append(auxiliar)
+          
+        return Response({"estudiante":estudiante_serializer,
+                     "grado":grado,
+                     "fecha_emision":fecha_emision,
+                     "datos":materias_tomadas,
+                     "otros_datos":otros_datos
+                     #"datos":serializer_asignaturas_cursadas,
+                     
+                     })
+    else:
+        return Response({"Message":"El ci ingresado no coincide con ningun registro"})
 
 def estadisticas_materias(ci_estudiante):
     # Filtrar las asignaturas cursadas
@@ -209,43 +277,43 @@ def VerificarGrado(ci_estudiante):
 
     return resultado
 
-@api_view(['GET'])
-def ObtenerMateriasAprobadas(request,ci_estudiante):
-    estudiante=Estudiante.objects.filter(ci_estudiante=ci_estudiante)
-    grado=VerificarGrado(ci_estudiante)
-    fecha_hora=datetime.now()
-    fecha_emision = fecha_hora.strftime("%Y-%m-%d %H:%M:%S")
-    otros_datos= estadisticas_materias_aprobadas(ci_estudiante)
-    if not estudiante:
-        return Response({"message":"El CI que ingreso no corresponde a ningun estudiante registrado"})
-    else:
-        estudiante_serializer=EstudianteHistorialSerializer(estudiante.first()).data
-        asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante,estado_gestion_espaniol='APROBADO')
-        serializer_asignaturas_cursadas=AsignaturaCursadaSerializer(asignaturas_cursadas, many=True).data
-        return Response({"estudiante":estudiante_serializer,
-                         "grado":grado,
-                         "fecha_emision":fecha_emision,
-                        "datos":serializer_asignaturas_cursadas,
-                        "otros_datos":otros_datos
-                        })
-def estadisticas_materias_aprobadas(ci_estudiante):
-    # Filtrar las asignaturas cursadas que tienen una nota final aprobada
-    asignaturas_aprobadas = AsignaturaCursada.objects.filter(
-    id_nota__resultado_gestion_espaniol='APROBADO',
-    ci_estudiante=ci_estudiante
-    )
-    # Obtener la cantidad de asignaturas aprobadas
-    cantidad_aprobadas = asignaturas_aprobadas.count()
+# @api_view(['GET'])
+# def ObtenerMateriasAprobadas(request,ci_estudiante):
+#     estudiante=Estudiante.objects.filter(ci_estudiante=ci_estudiante)
+#     grado=VerificarGrado(ci_estudiante)
+#     fecha_hora=datetime.now()
+#     fecha_emision = fecha_hora.strftime("%Y-%m-%d %H:%M:%S")
+#     otros_datos= estadisticas_materias_aprobadas(ci_estudiante)
+#     if not estudiante:
+#         return Response({"message":"El CI que ingreso no corresponde a ningun estudiante registrado"})
+#     else:
+#         estudiante_serializer=EstudianteHistorialSerializer(estudiante.first()).data
+#         asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante,estado_gestion_espaniol='APROBADO')
+#         serializer_asignaturas_cursadas=AsignaturaCursadaSerializer(asignaturas_cursadas, many=True).data
+#         return Response({"estudiante":estudiante_serializer,
+#                          "grado":grado,
+#                          "fecha_emision":fecha_emision,
+#                         "datos":serializer_asignaturas_cursadas,
+#                         "otros_datos":otros_datos
+#                         })
+# def estadisticas_materias_aprobadas(ci_estudiante):
+#     # Filtrar las asignaturas cursadas que tienen una nota final aprobada
+#     asignaturas_aprobadas = AsignaturaCursada.objects.filter(
+#     id_nota__resultado_gestion_espaniol='APROBADO',
+#     ci_estudiante=ci_estudiante
+#     )
+#     # Obtener la cantidad de asignaturas aprobadas
+#     cantidad_aprobadas = asignaturas_aprobadas.count()
 
-    # Obtener el promedio de las notas finales de las asignaturas aprobadas
-    promedio_aprobadas = asignaturas_aprobadas.aggregate(Avg('id_nota__nota_num_final'))['id_nota__nota_num_final__avg']
-    promedio_aprobadas_redondeado=round(promedio_aprobadas,2)
+#     # Obtener el promedio de las notas finales de las asignaturas aprobadas
+#     promedio_aprobadas = asignaturas_aprobadas.aggregate(Avg('id_nota__nota_num_final'))['id_nota__nota_num_final__avg']
+#     promedio_aprobadas_redondeado=round(promedio_aprobadas,2)
 
-    return {
-        'cantidad_aprobadas': cantidad_aprobadas,
-        'promedio_aprobadas': promedio_aprobadas_redondeado,
+#     return {
+#         'cantidad_aprobadas': cantidad_aprobadas,
+#         'promedio_aprobadas': promedio_aprobadas_redondeado,
 
-    }
+#     }
 
 def actualizar_anio_cursado(ci_estudiante):
     asignaturas_aprobadas = AsignaturaCursada.objects.filter(
@@ -292,31 +360,31 @@ def obtenerUltimo_numero_registrado(codigo_carrera):
         print("------------",ultimo_estudiante)
     return ultimo_estudiante
 
-@api_view(['GET'])
-def obtenerCertificacionGestionAnterior(request,ci_estudiante):
-    estudiante=Estudiante.objects.filter(ci_estudiante=ci_estudiante)
-    if estudiante:
+# @api_view(['GET'])
+# def obtenerCertificacionGestionAnterior(request,ci_estudiante):
+#     estudiante=Estudiante.objects.filter(ci_estudiante=ci_estudiante)
+#     if estudiante:
         
-        grado=VerificarGrado(ci_estudiante)
-        fecha_hora=datetime.now()
-        fecha_emision = fecha_hora.strftime("%Y-%m-%d %H:%M:%S")
-        anio_anterior = str(datetime.now().year-1)
+#         grado=VerificarGrado(ci_estudiante)
+#         fecha_hora=datetime.now()
+#         fecha_emision = fecha_hora.strftime("%Y-%m-%d %H:%M:%S")
+#         anio_anterior = str(datetime.now().year-1)
                
        
-        estudiante_serializer=EstudianteHistorialSerializer(estudiante.first()).data
-        asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante,anio_cursado=anio_anterior )
-        if asignaturas_cursadas:
-            #otros_datos= estadisticas_materias(ci_estudiante)
-            serializer_asignaturas_cursadas=AsignaturaCursadaSerializer(asignaturas_cursadas, many=True).data
-            return Response({"estudiante":estudiante_serializer,
-                    "grado":grado,
-                    "fecha_emision":fecha_emision,
-                    "datos":serializer_asignaturas_cursadas                    
-                    })
-        else:
-            return Response({"message":"El estudiante no cuenta con ninguna materia registrada"})
-    else:
-        return Response({"Message":"El ci ingresado no coincide con ningun registro"})
+#         estudiante_serializer=EstudianteHistorialSerializer(estudiante.first()).data
+#         asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante,anio_cursado=anio_anterior )
+#         if asignaturas_cursadas:
+#             #otros_datos= estadisticas_materias(ci_estudiante)
+#             serializer_asignaturas_cursadas=AsignaturaCursadaSerializer(asignaturas_cursadas, many=True).data
+#             return Response({"estudiante":estudiante_serializer,
+#                     "grado":grado,
+#                     "fecha_emision":fecha_emision,
+#                     "datos":serializer_asignaturas_cursadas                    
+#                     })
+#         else:
+#             return Response({"message":"El estudiante no cuenta con ninguna materia registrada"})
+#     else:
+#         return Response({"Message":"El ci ingresado no coincide con ningun registro"})
  
 @api_view(['GET'])
 def obtenerCertificacionPorGestion(request,ci_estudiante,anio):
@@ -332,12 +400,53 @@ def obtenerCertificacionPorGestion(request,ci_estudiante,anio):
         estudiante_serializer=EstudianteHistorialSerializer(estudiante.first()).data
         asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante,anio_cursado=anio ).order_by('codigo_asignatura')
         if asignaturas_cursadas:
+            materias_tomadas=[]
+            for asignatura in asignaturas_cursadas:
+                auxiliar=[]
+                if asignatura.malla_aplicada=='2018' and asignatura.homologacion=='SI':
+                    auxiliar.append(asignatura.anio_cursado)
+                    auxiliar.append(asignatura.codigo_malla_ajustada)
+                    materia=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_malla_ajustada)             
+                    auxiliar.append(materia.nombre_asignatura)
+                    auxiliar.append(asignatura.id_nota.nota_num_final)
+                    auxiliar.append(asignatura.id_nota.nota_literal_quechua)
+                    auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
+                    auxiliar.append(asignatura.homologacion)
+                    materias_tomadas.append(auxiliar)
+                    #print(asignatura.anio_cursado," - ",asignatura.codigo_malla_ajustada," = ",materia.nombre_asignatura," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
+                
+                elif asignatura.malla_aplicada=='2018'and  asignatura.homologacion=='NO':
+                    auxiliar.append(asignatura.anio_cursado)
+                    auxiliar.append(asignatura.codigo_asignatura)
+                    materia=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_asignatura)
+                    auxiliar.append(materia.asignatura_malla_2018)
+                    auxiliar.append(asignatura.id_nota.nota_num_final)
+                    auxiliar.append(asignatura.id_nota.nota_literal_quechua)
+                    auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
+                    auxiliar.append(asignatura.homologacion)
+                    materias_tomadas.append(auxiliar)
+                    #print(asignatura.anio_cursado," - ",asignatura.codigo_asignatura," = ",materia.asignatura_malla_2018," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
+                elif asignatura.malla_aplicada=='2023' and asignatura.estado_gestion_espaniol!='ABANDONO':
+                    auxiliar.append(asignatura.anio_cursado)
+                    auxiliar.append(asignatura.codigo_asignatura)
+                    materia=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_asignatura)
+                    auxiliar.append(materia.nombre_asignatura)
+                    auxiliar.append(materia.total_horas)
+                    auxiliar.append((materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1)
+                    auxiliar.append(asignatura.id_nota.nota_num_final)
+                    auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
+                    if asignatura.convalidacion:
+                        auxiliar.append('CONV.Segun RM 0155/2023')
+                    else:
+                        auxiliar.append("Segun RM 0155/2023")
+                    materias_tomadas.append(auxiliar)
+
             #otros_datos= estadisticas_materias(ci_estudiante)
             serializer_asignaturas_cursadas=AsignaturaCursadaSerializer(asignaturas_cursadas, many=True).data
             return Response({"estudiante":estudiante_serializer,
                     "grado":grado,
                     "fecha_emision":fecha_emision,
-                    "datos":serializer_asignaturas_cursadas                    
+                    "datos":materias_tomadas                    
                     })
         else:
             return Response({"message":"El estudiante no cuenta con ninguna materia registrada en esa gestión"})
