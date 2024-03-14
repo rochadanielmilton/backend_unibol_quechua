@@ -451,8 +451,12 @@ def obtenerCertificacionPorGestion(request,ci_estudiante,anio):
                     auxiliar.append(asignatura.id_nota.nota_num_final)
                     auxiliar.append(asignatura.id_nota.nota_literal_quechua)
                     auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
-                    auxiliar.append(asignatura.homologacion)
+                    if asignatura.convalidacion:
+                        auxiliar.append('CONV.HOMOLOGADO')
+                    else:
+                        auxiliar.append('HOMOLOGADO')
                     materias_tomadas.append(auxiliar)
+                    
                     #print(asignatura.anio_cursado," - ",asignatura.codigo_malla_ajustada," = ",materia.nombre_asignatura," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
                 
                 elif asignatura.malla_aplicada=='2018'and  asignatura.homologacion=='NO':
@@ -463,7 +467,7 @@ def obtenerCertificacionPorGestion(request,ci_estudiante,anio):
                     auxiliar.append(asignatura.id_nota.nota_num_final)
                     auxiliar.append(asignatura.id_nota.nota_literal_quechua)
                     auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
-                    auxiliar.append(asignatura.homologacion)
+                    auxiliar.append('NO HOMOLOGADO')
                     materias_tomadas.append(auxiliar)
                     #print(asignatura.anio_cursado," - ",asignatura.codigo_asignatura," = ",materia.asignatura_malla_2018," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
                 elif asignatura.malla_aplicada=='2023' and asignatura.estado_gestion_espaniol!='ABANDONO':
