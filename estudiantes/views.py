@@ -89,6 +89,7 @@ def ObtenerHitorialAcademico2(request,ci_estudiante):
         estudiante_serializer=EstudianteHistorialSerializer(estudiante).data
         asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).order_by('anio_cursado')
         otros_datos= estadisticas_materias_malla_2023(ci_estudiante)
+        total_horas_vencidas=0
         for asignatura in asignaturas_cursadas:
             auxiliar=[]
             if asignatura.malla_aplicada=='2018' and asignatura.homologacion=='SI':
@@ -97,6 +98,7 @@ def ObtenerHitorialAcademico2(request,ci_estudiante):
                 materia=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_malla_ajustada)             
                 auxiliar.append(materia.nombre_asignatura)
                 auxiliar.append(materia.total_horas)
+                total_horas_vencidas=total_horas_vencidas+materia.total_horas
                 auxiliar.append((materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1)
                 auxiliar.append(asignatura.id_nota.nota_num_final)
                 auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
@@ -125,6 +127,7 @@ def ObtenerHitorialAcademico2(request,ci_estudiante):
                 materia=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_asignatura)
                 auxiliar.append(materia.nombre_asignatura)
                 auxiliar.append(materia.total_horas)
+                total_horas_vencidas=total_horas_vencidas+materia.total_horas
                 auxiliar.append((materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1)
                 auxiliar.append(asignatura.id_nota.nota_num_final)
                 auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
@@ -138,7 +141,8 @@ def ObtenerHitorialAcademico2(request,ci_estudiante):
                      "grado":grado,
                      "fecha_emision":fecha_emision,
                      "datos":materias_tomadas,
-                     "otros_datos":otros_datos
+                     "otros_datos":otros_datos,
+                     "total_horas_vencidas":total_horas_vencidas
                      #"datos":serializer_asignaturas_cursadas,
                      
                      })

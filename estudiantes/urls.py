@@ -32,6 +32,7 @@ urlpatterns = [
     path('ObtenerResponsable/<int:ci_estudiante>/', views.ObtenerResponsable, name='ObtenerResponsable'),
     path('ObtenerOrganizacion/<int:ci_estudiante>/', views.ObtenerOrganizacion, name='ObtenerOrganizacion'),
     
+
     
     
     #path('actualizarNotas/', views.ActualizarNotas, name='actualizarNotas'),
