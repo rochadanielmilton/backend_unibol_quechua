@@ -441,9 +441,11 @@ def obtenerCertificacionPorGestion(request,ci_estudiante,anio):
         asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante,anio_cursado=anio ).order_by('codigo_asignatura')
         if asignaturas_cursadas:
             materias_tomadas=[]
+            cont=1
             for asignatura in asignaturas_cursadas:
                 auxiliar=[]
                 if asignatura.malla_aplicada=='2018' and asignatura.homologacion=='SI':
+                    auxiliar.append(cont)
                     auxiliar.append(asignatura.anio_cursado)
                     auxiliar.append(asignatura.codigo_malla_ajustada)
                     materia=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_malla_ajustada)             
@@ -456,10 +458,12 @@ def obtenerCertificacionPorGestion(request,ci_estudiante,anio):
                     else:
                         auxiliar.append('HOMOLOGADO')
                     materias_tomadas.append(auxiliar)
+                    cont=cont+1
                     
                     #print(asignatura.anio_cursado," - ",asignatura.codigo_malla_ajustada," = ",materia.nombre_asignatura," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
                 
                 elif asignatura.malla_aplicada=='2018'and  asignatura.homologacion=='NO':
+                    auxiliar.append(cont)
                     auxiliar.append(asignatura.anio_cursado)
                     auxiliar.append(asignatura.codigo_asignatura)
                     materia=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_asignatura)
@@ -469,8 +473,10 @@ def obtenerCertificacionPorGestion(request,ci_estudiante,anio):
                     auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
                     auxiliar.append('NO HOMOLOGADO')
                     materias_tomadas.append(auxiliar)
+                    cont=cont+1
                     #print(asignatura.anio_cursado," - ",asignatura.codigo_asignatura," = ",materia.asignatura_malla_2018," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
                 elif asignatura.malla_aplicada=='2023' and asignatura.estado_gestion_espaniol!='ABANDONO':
+                    auxiliar.append(cont)
                     auxiliar.append(asignatura.anio_cursado)
                     auxiliar.append(asignatura.codigo_asignatura)
                     materia=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_asignatura)
@@ -478,13 +484,14 @@ def obtenerCertificacionPorGestion(request,ci_estudiante,anio):
                     auxiliar.append(materia.total_horas)
                     auxiliar.append((materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1)
                     auxiliar.append(asignatura.id_nota.nota_num_final)
+                    auxiliar.append(asignatura.id_nota.nota_literal_quechua)
                     auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
                     if asignatura.convalidacion:
                         auxiliar.append('CONV.Segun RM 0155/2023')
                     else:
                         auxiliar.append("Segun RM 0155/2023")
                     materias_tomadas.append(auxiliar)
-
+                    cont=cont+1
             #otros_datos= estadisticas_materias(ci_estudiante)
             serializer_asignaturas_cursadas=AsignaturaCursadaSerializer(asignaturas_cursadas, many=True).data
             return Response({"estudiante":estudiante_serializer,
