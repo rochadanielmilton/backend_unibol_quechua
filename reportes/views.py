@@ -87,10 +87,16 @@ def EstudiantesInscritosPorDepartamentos(request):
         for departamento in departamentos:
             estudiantes = Estudiante.objects.filter(codigo_carrera=carrera.codigo_carrera,depa_nacimiento=departamento, inscrito_gestion='si',anio_cursado__in=anios)
             numero = estudiantes.count()
-            auxiliar.append(numero)
+            if numero:
+                auxiliar.append(numero)
+            else:
+                auxiliar.append("-")
         estudiantes = Estudiante.objects.filter(codigo_carrera=carrera.codigo_carrera, inscrito_gestion='si',anio_cursado__in=anios)
         numero = estudiantes.count()
-        auxiliar.append(numero)
+        if numero:
+            auxiliar.append(numero)
+        else:
+            auxiliar.append("-")
         reporte.append(auxiliar)
     estudiantes = Estudiante.objects.filter(inscrito_gestion='si',anio_cursado__in=anios)
     numero_total=estudiantes.count()
