@@ -87,8 +87,14 @@ def EstudiantesInscritosPorDepartamentos(request):
             estudiantes = Estudiante.objects.filter(codigo_carrera=carrera.codigo_carrera,depa_nacimiento=departamento, inscrito_gestion='si').exclude(anio_cursado='DEFENZA')
             numero = estudiantes.count()
             auxiliar.append(numero)
+        estudiantes = Estudiante.objects.filter(codigo_carrera=carrera.codigo_carrera, inscrito_gestion='si').exclude(anio_cursado='DEFENZA')
+        numero = estudiantes.count()
+        auxiliar.append(numero)
         reporte.append(auxiliar)
-
+    estudiantes = Estudiante.objects.filter(inscrito_gestion='si').exclude(anio_cursado='DEFENZA')
+    numero_total=estudiantes.count()
+    reporte.append("TOTAL")
+    reporte.append(numero_total)
     if reporte:
         return Response(reporte)
     else:
