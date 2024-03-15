@@ -78,24 +78,23 @@ def EstudiantesInscritosGenero(request):
 @api_view(['GET'])
 def EstudiantesInscritosPorDepartamentos(request):
     departamentos = ['COCHABAMBA', 'LA PAZ', 'SANTA CRUZ', 'ORURO', 'POTOSI','CHUQUISACA','TARIJA','BENI','PANDO']
+    anios = ['PRIMER AÑO', 'SEGUNDO AÑO', 'TERCER AÑO', 'CUARTO AÑO', 'QUINTO AÑO']
     carreras = Carrera.objects.all()
     reporte = []
 
     for carrera in carreras:
         auxiliar=[carrera.nombre_carrera]
         for departamento in departamentos:
-            estudiantes = Estudiante.objects.filter(codigo_carrera=carrera.codigo_carrera,depa_nacimiento=departamento, inscrito_gestion='si').exclude(anio_cursado='DEFENZA')
+            estudiantes = Estudiante.objects.filter(codigo_carrera=carrera.codigo_carrera,depa_nacimiento=departamento, inscrito_gestion='si',anio_cursado__in=anios)
             numero = estudiantes.count()
             auxiliar.append(numero)
-        estudiantes = Estudiante.objects.filter(codigo_carrera=carrera.codigo_carrera, inscrito_gestion='si').exclude(anio_cursado='DEFENZA')
+        estudiantes = Estudiante.objects.filter(codigo_carrera=carrera.codigo_carrera, inscrito_gestion='si',anio_cursado__in=anios)
         numero = estudiantes.count()
         auxiliar.append(numero)
         reporte.append(auxiliar)
-    estudiantes = Estudiante.objects.filter(inscrito_gestion='si').exclude(anio_cursado='DEFENZA')
+    estudiantes = Estudiante.objects.filter(inscrito_gestion='si',anio_cursado__in=anios)
     numero_total=estudiantes.count()
-    reporte.append("TOTAL")
-    reporte.append(numero_total)
     if reporte:
-        return Response(reporte)
+        return Response({"datos":reporte,"TOTAL":numero_total})
     else:
         return Response({"message": "no se encontró ningún estudiante, ingrese datos válidos"})
