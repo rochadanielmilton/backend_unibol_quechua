@@ -52,49 +52,44 @@ def EstudiantesCarreraAnio(request,codigo_carrera,anio_cursado):
     
 @api_view(['GET'])
 def EstudiantesInscritosGenero(request):
-    anios=['PRIMER AÑO', 'SEGUNDO AÑO', 'TERCER AÑO', 'CUARTO AÑO', 'QUINTO AÑO']
-    reporte=[]
+    anios = ['PRIMER AÑO', 'SEGUNDO AÑO', 'TERCER AÑO', 'CUARTO AÑO', 'QUINTO AÑO']
+    carreras = Carrera.objects.all()
+    reporte = []
 
-    estudiantes_varones=Estudiante.objects.filter(codigo_carrera='AGRF',genero='M', inscrito_gestion='si',anio_cursado__in=anios)
-    numero_varones=estudiantes_varones.count()
-    estudiantes_mujeres=Estudiante.objects.filter(codigo_carrera='AGRF',genero='F', inscrito_gestion='si',anio_cursado__in=anios)
-    numero_mujeres=estudiantes_mujeres.count()
-    carrera=Carrera.objects.get(codigo_carrera='AGRF')
-    auxiliar=[carrera.nombre_carrera,numero_varones,numero_mujeres]
-    reporte.append(auxiliar)
+    for carrera in carreras:
+        estudiantes_varones = Estudiante.objects.filter(codigo_carrera=carrera.codigo_carrera, genero='M', inscrito_gestion='si', anio_cursado__in=anios)
+        numero_varones = estudiantes_varones.count()
+        estudiantes_mujeres = Estudiante.objects.filter(codigo_carrera=carrera.codigo_carrera, genero='F', inscrito_gestion='si', anio_cursado__in=anios)
+        numero_mujeres = estudiantes_mujeres.count()
+        auxiliar = [carrera.nombre_carrera, numero_varones, numero_mujeres]
+        reporte.append(auxiliar)
 
-    estudiantes_varones=Estudiante.objects.filter(codigo_carrera='TIAL',genero='M', inscrito_gestion='si',anio_cursado__in=anios)
-    numero_varones=estudiantes_varones.count()
-    estudiantes_mujeres=Estudiante.objects.filter(codigo_carrera='TIAL',genero='F', inscrito_gestion='si',anio_cursado__in=anios)
-    numero_mujeres=estudiantes_mujeres.count()
-    carrera=Carrera.objects.get(codigo_carrera='TIAL')
-    auxiliar=[carrera.nombre_carrera,numero_varones,numero_mujeres]
-    reporte.append(auxiliar)
-
-    estudiantes_varones=Estudiante.objects.filter(codigo_carrera='ECOP',genero='M', inscrito_gestion='si',anio_cursado__in=anios)
-    numero_varones=estudiantes_varones.count()
-    estudiantes_mujeres=Estudiante.objects.filter(codigo_carrera='ECOP',genero='F', inscrito_gestion='si',anio_cursado__in=anios)
-    numero_mujeres=estudiantes_mujeres.count()
-    carrera=Carrera.objects.get(codigo_carrera='ECOP')
-    auxiliar=[carrera.nombre_carrera,numero_varones,numero_mujeres]
-    reporte.append(auxiliar)
-
-    estudiantes_varones=Estudiante.objects.filter(codigo_carrera='ACUC',genero='M', inscrito_gestion='si',anio_cursado__in=anios)
-    numero_varones=estudiantes_varones.count()
-    estudiantes_mujeres=Estudiante.objects.filter(codigo_carrera='ACUC',genero='F', inscrito_gestion='si',anio_cursado__in=anios)
-    numero_mujeres=estudiantes_mujeres.count()
-    carrera=Carrera.objects.get(codigo_carrera='ACUC')
-    auxiliar=[carrera.nombre_carrera,numero_varones,numero_mujeres]
-    reporte.append(auxiliar)
-
-    estudiantes_varones=Estudiante.objects.filter(genero='M', inscrito_gestion='si',anio_cursado__in=anios)
-    numero_varones=estudiantes_varones.count()
-    estudiantes_mujeres=Estudiante.objects.filter(genero='F', inscrito_gestion='si',anio_cursado__in=anios)
-    numero_mujeres=estudiantes_mujeres.count()
-    auxiliar=["TOTAL VARONES Y MUJERES",numero_varones,numero_mujeres]
-    reporte.append(auxiliar)
+    # Total de estudiantes varones y mujeres en todas las carreras
+    total_varones = Estudiante.objects.filter(genero='M', inscrito_gestion='si', anio_cursado__in=anios).count()
+    total_mujeres = Estudiante.objects.filter(genero='F', inscrito_gestion='si', anio_cursado__in=anios).count()
+    auxiliar_total = ["TOTAL VARONES Y MUJERES", total_varones, total_mujeres]
+    reporte.append(auxiliar_total)
 
     if reporte:
         return Response(reporte)
     else:
-        return Response({"message":"no se encontro ningun estudiante ingrese datos validos"})
+        return Response({"message": "no se encontró ningún estudiante, ingrese datos válidos"})
+
+@api_view(['GET'])
+def EstudiantesInscritosPorDepartamentos(request):
+    departamentos = ['COCHABAMBA', 'LA PAZ', 'SANTA CRUZ', 'ORURO', 'POTOSI','CHUQUISACA','TARIJA','BENI','PANDO']
+    carreras = Carrera.objects.all()
+    reporte = []
+
+    for carrera in carreras:
+        auxiliar=[carrera.nombre_carrera]
+        for departamento in departamentos:
+            estudiantes = Estudiante.objects.filter(codigo_carrera=carrera.codigo_carrera,depa_nacimiento=departamento, inscrito_gestion='si').exclude(anio_cursado='DEFENZA')
+            numero = estudiantes.count()
+            auxiliar.append(numero)
+        reporte.append(auxiliar)
+
+    if reporte:
+        return Response(reporte)
+    else:
+        return Response({"message": "no se encontró ningún estudiante, ingrese datos válidos"})
