@@ -457,10 +457,10 @@ def obtenerCertificacionPorGestion(request,ci_estudiante,anio):
                     auxiliar.append(asignatura.id_nota.nota_num_final)
                     auxiliar.append(asignatura.id_nota.nota_literal_quechua)
                     auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
-                    if asignatura.convalidacion:
-                        auxiliar.append('CONV.HOMOLOGADO')
-                    else:
-                        auxiliar.append('HOMOLOGADO')
+                    # if asignatura.convalidacion:
+                    #     auxiliar.append('CONV.HOMOLOGADO')
+                    # else:
+                    #     auxiliar.append('HOMOLOGADO')
                     materias_tomadas.append(auxiliar)
                     cont=cont+1
                     
@@ -475,7 +475,7 @@ def obtenerCertificacionPorGestion(request,ci_estudiante,anio):
                     auxiliar.append(asignatura.id_nota.nota_num_final)
                     auxiliar.append(asignatura.id_nota.nota_literal_quechua)
                     auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
-                    auxiliar.append('NO HOMOLOGADO')
+                    # auxiliar.append('NO HOMOLOGADO')
                     materias_tomadas.append(auxiliar)
                     cont=cont+1
                     #print(asignatura.anio_cursado," - ",asignatura.codigo_asignatura," = ",materia.asignatura_malla_2018," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
@@ -485,15 +485,13 @@ def obtenerCertificacionPorGestion(request,ci_estudiante,anio):
                     auxiliar.append(asignatura.codigo_asignatura)
                     materia=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_asignatura)
                     auxiliar.append(materia.nombre_asignatura)
-                    auxiliar.append(materia.total_horas)
-                    auxiliar.append((materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1)
                     auxiliar.append(asignatura.id_nota.nota_num_final)
                     auxiliar.append(asignatura.id_nota.nota_literal_quechua)
                     auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
-                    if asignatura.convalidacion:
-                        auxiliar.append('CONV.Segun RM 0155/2023')
-                    else:
-                        auxiliar.append("Segun RM 0155/2023")
+                    # if asignatura.convalidacion:
+                    #     auxiliar.append('CONV.Segun RM 0155/2023')
+                    # else:
+                    #     auxiliar.append("Segun RM 0155/2023")
                     materias_tomadas.append(auxiliar)
                     cont=cont+1
             #otros_datos= estadisticas_materias(ci_estudiante)

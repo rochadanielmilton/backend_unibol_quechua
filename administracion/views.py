@@ -511,7 +511,8 @@ def inscripcionParaDefensa(request,ci_estudiante):
     
     ultimo_año=str(datetime.now().year)
     anio_aterior=str(datetime.now().year-1)
-    fecha_emision=datetime.now().date()
+    fecha_hora=datetime.now()
+    fecha_emision = fecha_hora.strftime("%Y-%m-%d %H:%M:%S")
     
     try:
         estudiante=Estudiante.objects.get(ci_estudiante=ci_estudiante)

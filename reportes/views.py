@@ -11,6 +11,44 @@ from rest_framework import status
 from django.db.models import Max
 
 # Create your views here.
+
+
+@api_view(['GET'])
+def EstudiantesInscritosPorCarreraAnio(request):
+    anios=['PRIMER AÑO', 'SEGUNDO AÑO', 'TERCER AÑO', 'CUARTO AÑO', 'QUINTO AÑO']
+    carreras=Carrera.objects.filter(estado='habilitado')
+    reporte=[]
+    fecha_hora=datetime.now()
+    fecha_emision = fecha_hora.strftime("%Y-%m-%d %H:%M:%S")
+    try:
+        for carrera in carreras:
+            auxiliar=[carrera.nombre_carrera]
+            for anio in anios:
+                estudiantes = Estudiante.objects.filter(codigo_carrera=carrera.codigo_carrera,inscrito_gestion='si',anio_cursado=anio)
+                numero = estudiantes.count()
+                if numero:
+                    auxiliar.append(numero)
+                else:
+                    auxiliar.append("-")                   
+            estudiantes = Estudiante.objects.filter(codigo_carrera=carrera.codigo_carrera, inscrito_gestion='si',anio_cursado__in=anios)
+            numero = estudiantes.count()
+            auxiliar.append(numero)
+            reporte.append(auxiliar)
+        
+        estudiantes = Estudiante.objects.filter(inscrito_gestion='si',anio_cursado__in=anios)
+        numero_total=estudiantes.count()
+        auxiliar=["TOTAL"]
+        for anio in anios:            
+            estudiantes = Estudiante.objects.filter(inscrito_gestion='si',anio_cursado=anio)
+            numero=estudiantes.count()
+            auxiliar.append(numero)
+        reporte.append(auxiliar)
+
+        return Response({"datos":reporte,"TOTAL":numero_total,"fecha_emision":fecha_emision}) 
+        
+    except:
+        return Response({"message":"vuelva a ingresar correctamente los valores"})
+    
 @api_view(['GET'])
 def EstudiantesCarreraAnio(request,codigo_carrera,anio_cursado):
     try:

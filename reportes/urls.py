@@ -7,7 +7,8 @@ from.import views
 urlpatterns = [
     path('EstudiantesCarreraAnio/<str:codigo_carrera>/<str:anio_cursado>/', views.EstudiantesCarreraAnio, name='EstudiantesCarreraAnio'),
     path('EstudiantesInscritosGenero/', views.EstudiantesInscritosGenero, name='EstudiantesInscritosGenero'),
-    path('EstudiantesInscritosPorDepartamentos/', views.EstudiantesInscritosPorDepartamentos, name='EstudiantesInscritosPorDepartamentos'),  
+    path('EstudiantesInscritosPorDepartamentos/', views.EstudiantesInscritosPorDepartamentos, name='EstudiantesInscritosPorDepartamentos'),
+    path('EstudiantesInscritosPorCarreraAnio/', views.EstudiantesInscritosPorCarreraAnio, name='EstudiantesInscritosPorCarreraAnio'),  
 
     
 ]
