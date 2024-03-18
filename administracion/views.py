@@ -517,7 +517,7 @@ def inscripcionParaDefensa(request,ci_estudiante):
     try:
         estudiante=Estudiante.objects.get(ci_estudiante=ci_estudiante)
         numero_archivo=obtenerNumeroArchivo(ci_estudiante)    
-        materias=culminacionMaterias(ci_estudiante)
+        materias=True
         numero_boleta=GenerarNuevaBoletaEgresados(ci_estudiante)
         #print("--------------",materias)
         if materias:

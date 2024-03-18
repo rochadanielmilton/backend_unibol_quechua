@@ -87,55 +87,58 @@ def ObtenerHitorialAcademico2(request,ci_estudiante):
                
         materias_tomadas=[]
         estudiante_serializer=EstudianteHistorialSerializer(estudiante).data
-        asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).order_by('anio_cursado')
+        asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).order_by('anio_cursado','codigo_asignatura')
         otros_datos= estadisticas_materias_malla_2023(ci_estudiante)
         total_horas_vencidas=0
         for asignatura in asignaturas_cursadas:
-            auxiliar=[]
-            if asignatura.malla_aplicada=='2018' and asignatura.homologacion=='SI':
-                auxiliar.append(asignatura.anio_cursado)
-                auxiliar.append(asignatura.codigo_malla_ajustada)
-                materia=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_malla_ajustada)             
-                auxiliar.append(materia.nombre_asignatura)
-                auxiliar.append(materia.total_horas)
-                total_horas_vencidas=total_horas_vencidas+materia.total_horas
-                auxiliar.append((materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1)
-                auxiliar.append(asignatura.id_nota.nota_num_final)
-                auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
-                if asignatura.convalidacion:
-                    auxiliar.append('CONV.HOMOLOGADO')
-                else:
-                    auxiliar.append(asignatura.homologacion)
-                materias_tomadas.append(auxiliar)
-                #print(asignatura.anio_cursado," - ",asignatura.codigo_malla_ajustada," = ",materia.nombre_asignatura," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
+            asig=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_asignatura)
+            if asignatura.estado_gestion_espaniol=='APR.':# and asig.anio_asignado in['PRIMERO','SEGUNDO','TERCERO'] and asignatura.codigo_malla_ajustada!='LCTA 401':
+                auxiliar=[]
+                if asignatura.malla_aplicada=='2018' and asignatura.homologacion=='SI':
+                    #if asig.anio_asignado in['PRIMERO','SEGUNDO','TERCERO'] and asignatura.codigo_malla_ajustada!='LCTA 401':
+                        auxiliar.append(asignatura.anio_cursado)
+                        auxiliar.append(asignatura.codigo_malla_ajustada)
+                        materia=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_malla_ajustada)             
+                        auxiliar.append(materia.nombre_asignatura)
+                        auxiliar.append(materia.total_horas)
+                        total_horas_vencidas=total_horas_vencidas+materia.total_horas
+                        auxiliar.append((materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1)
+                        auxiliar.append(asignatura.id_nota.nota_num_final)
+                        auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
+                        if asignatura.convalidacion:
+                            auxiliar.append('CONV.HOMOLOGADO')
+                        else:
+                            auxiliar.append(asignatura.homologacion)
+                        materias_tomadas.append(auxiliar)
+                    #print(asignatura.anio_cursado," - ",asignatura.codigo_malla_ajustada," = ",materia.nombre_asignatura," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
                 
-            # elif asignatura.malla_aplicada=='2018'and  asignatura.homologacion=='NO':
-            #     auxiliar.append(asignatura.anio_cursado)
-            #     auxiliar.append(asignatura.codigo_asignatura)
-            #     materia=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_asignatura)
-            #     auxiliar.append(materia.asignatura_malla_2018)
-            #     auxiliar.append(materia.total_horas)
-            #     auxiliar.append((materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1)
-            #     auxiliar.append(asignatura.id_nota.nota_num_final)
-            #     auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
-            #     auxiliar.append(asignatura.homologacion)
-            #     materias_tomadas.append(auxiliar)
-            #     print(asignatura.anio_cursado," - ",asignatura.codigo_asignatura," = ",materia.asignatura_malla_2018," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
-            elif asignatura.malla_aplicada=='2023' and asignatura.estado_gestion_espaniol!='ABANDONO':
-                auxiliar.append(asignatura.anio_cursado)
-                auxiliar.append(asignatura.codigo_asignatura)
-                materia=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_asignatura)
-                auxiliar.append(materia.nombre_asignatura)
-                auxiliar.append(materia.total_horas)
-                total_horas_vencidas=total_horas_vencidas+materia.total_horas
-                auxiliar.append((materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1)
-                auxiliar.append(asignatura.id_nota.nota_num_final)
-                auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
-                if asignatura.convalidacion:
-                    auxiliar.append('CONV.Segun RM 0155/2023')
-                else:
-                    auxiliar.append("Segun RM 0155/2023")
-                materias_tomadas.append(auxiliar)
+                # elif asignatura.malla_aplicada=='2018'and  asignatura.homologacion=='NO':
+                #     auxiliar.append(asignatura.anio_cursado)
+                #     auxiliar.append(asignatura.codigo_asignatura)
+                #     materia=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_asignatura)
+                #     auxiliar.append(materia.asignatura_malla_2018)
+                #     auxiliar.append(materia.total_horas)
+                #     auxiliar.append((materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1)
+                #     auxiliar.append(asignatura.id_nota.nota_num_final)
+                #     auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
+                #     auxiliar.append(asignatura.homologacion)
+                #     materias_tomadas.append(auxiliar)
+                #     print(asignatura.anio_cursado," - ",asignatura.codigo_asignatura," = ",materia.asignatura_malla_2018," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
+                elif asignatura.malla_aplicada=='2023' and asignatura.estado_gestion_espaniol!='ABANDONO':#and asig.anio_asignado in['PRIMERO','SEGUNDO','TERCERO']:
+                    auxiliar.append(asignatura.anio_cursado)
+                    auxiliar.append(asignatura.codigo_asignatura)
+                    materia=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_asignatura)
+                    auxiliar.append(materia.nombre_asignatura)
+                    auxiliar.append(materia.total_horas)
+                    total_horas_vencidas=total_horas_vencidas+materia.total_horas
+                    auxiliar.append((materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1)
+                    auxiliar.append(asignatura.id_nota.nota_num_final)
+                    auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
+                    if asignatura.convalidacion:
+                        auxiliar.append('CONV.Segun RM 0155/2023')
+                    else:
+                        auxiliar.append("Segun RM 0155/2023")
+                    materias_tomadas.append(auxiliar)
           
         return Response({"estudiante":estudiante_serializer,
                      "grado":grado,
@@ -237,7 +240,7 @@ def estadisticas_materias_malla_2023(ci_estudiante):
         promedio_aprobadas_redondeado=0
 
         # Obtener estadísticas de todas las materias cursadas
-    asignaturas_todas = AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).exclude(homologacion='NO',malla_aplicada='2018').exclude(estado_gestion_espaniol='ABANDONO')
+    asignaturas_todas = AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante ).exclude(homologacion='NO',malla_aplicada='2018').exclude(estado_gestion_espaniol='ABANDONO')
     if asignaturas_todas:
         cantidad_todas = asignaturas_todas.count()
         print("-------", cantidad_todas)
@@ -447,53 +450,54 @@ def obtenerCertificacionPorGestion(request,ci_estudiante,anio):
             materias_tomadas=[]
             cont=1
             for asignatura in asignaturas_cursadas:
-                auxiliar=[]
-                if asignatura.malla_aplicada=='2018' and asignatura.homologacion=='SI':
-                    auxiliar.append(cont)
-                    auxiliar.append(asignatura.anio_cursado)
-                    auxiliar.append(asignatura.codigo_malla_ajustada)
-                    materia=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_malla_ajustada)             
-                    auxiliar.append(materia.nombre_asignatura)
-                    auxiliar.append(asignatura.id_nota.nota_num_final)
-                    auxiliar.append(asignatura.id_nota.nota_literal_quechua)
-                    auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
-                    # if asignatura.convalidacion:
-                    #     auxiliar.append('CONV.HOMOLOGADO')
-                    # else:
-                    #     auxiliar.append('HOMOLOGADO')
-                    materias_tomadas.append(auxiliar)
-                    cont=cont+1
+                if asignatura.estado_gestion_espaniol=='APR.':
+                    auxiliar=[]
+                    if asignatura.malla_aplicada=='2018' and asignatura.homologacion=='SI':
+                        auxiliar.append(cont)
+                        auxiliar.append(asignatura.anio_cursado)
+                        auxiliar.append(asignatura.codigo_malla_ajustada)
+                        materia=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_malla_ajustada)             
+                        auxiliar.append(materia.nombre_asignatura)
+                        auxiliar.append(asignatura.id_nota.nota_num_final)
+                        auxiliar.append(asignatura.id_nota.nota_literal_quechua)
+                        auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
+                        # if asignatura.convalidacion:
+                        #     auxiliar.append('CONV.HOMOLOGADO')
+                        # else:
+                        #     auxiliar.append('HOMOLOGADO')
+                        materias_tomadas.append(auxiliar)
+                        cont=cont+1
                     
-                    #print(asignatura.anio_cursado," - ",asignatura.codigo_malla_ajustada," = ",materia.nombre_asignatura," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
+                        #print(asignatura.anio_cursado," - ",asignatura.codigo_malla_ajustada," = ",materia.nombre_asignatura," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
                 
-                elif asignatura.malla_aplicada=='2018'and  asignatura.homologacion=='NO':
-                    auxiliar.append(cont)
-                    auxiliar.append(asignatura.anio_cursado)
-                    auxiliar.append(asignatura.codigo_asignatura)
-                    materia=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_asignatura)
-                    auxiliar.append(materia.asignatura_malla_2018)
-                    auxiliar.append(asignatura.id_nota.nota_num_final)
-                    auxiliar.append(asignatura.id_nota.nota_literal_quechua)
-                    auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
-                    # auxiliar.append('NO HOMOLOGADO')
-                    materias_tomadas.append(auxiliar)
-                    cont=cont+1
-                    #print(asignatura.anio_cursado," - ",asignatura.codigo_asignatura," = ",materia.asignatura_malla_2018," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
-                elif asignatura.malla_aplicada=='2023' and asignatura.estado_gestion_espaniol!='ABANDONO':
-                    auxiliar.append(cont)
-                    auxiliar.append(asignatura.anio_cursado)
-                    auxiliar.append(asignatura.codigo_asignatura)
-                    materia=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_asignatura)
-                    auxiliar.append(materia.nombre_asignatura)
-                    auxiliar.append(asignatura.id_nota.nota_num_final)
-                    auxiliar.append(asignatura.id_nota.nota_literal_quechua)
-                    auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
-                    # if asignatura.convalidacion:
-                    #     auxiliar.append('CONV.Segun RM 0155/2023')
-                    # else:
-                    #     auxiliar.append("Segun RM 0155/2023")
-                    materias_tomadas.append(auxiliar)
-                    cont=cont+1
+                    # elif asignatura.malla_aplicada=='2018'and  asignatura.homologacion=='NO':
+                    #     auxiliar.append(cont)
+                    #     auxiliar.append(asignatura.anio_cursado)
+                    #     auxiliar.append(asignatura.codigo_asignatura)
+                    #     materia=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_asignatura)
+                    #     auxiliar.append(materia.asignatura_malla_2018)
+                    #     auxiliar.append(asignatura.id_nota.nota_num_final)
+                    #     auxiliar.append(asignatura.id_nota.nota_literal_quechua)
+                    #     auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
+                    #     # auxiliar.append('NO HOMOLOGADO')
+                    #     materias_tomadas.append(auxiliar)
+                    #     cont=cont+1
+                    #     #print(asignatura.anio_cursado," - ",asignatura.codigo_asignatura," = ",materia.asignatura_malla_2018," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
+                    elif asignatura.malla_aplicada=='2023' and asignatura.estado_gestion_espaniol!='ABANDONO':
+                        auxiliar.append(cont)
+                        auxiliar.append(asignatura.anio_cursado)
+                        auxiliar.append(asignatura.codigo_asignatura)
+                        materia=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_asignatura)
+                        auxiliar.append(materia.nombre_asignatura)
+                        auxiliar.append(asignatura.id_nota.nota_num_final)
+                        auxiliar.append(asignatura.id_nota.nota_literal_quechua)
+                        auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
+                        # if asignatura.convalidacion:
+                        #     auxiliar.append('CONV.Segun RM 0155/2023')
+                        # else:
+                        #     auxiliar.append("Segun RM 0155/2023")
+                        materias_tomadas.append(auxiliar)
+                        cont=cont+1
             #otros_datos= estadisticas_materias(ci_estudiante)
             serializer_asignaturas_cursadas=AsignaturaCursadaSerializer(asignaturas_cursadas, many=True).data
             return Response({"estudiante":estudiante_serializer,
