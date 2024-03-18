@@ -10,6 +10,8 @@ from datetime import datetime
 from django.db.models import Avg, Count, F
 from rest_framework import status
 from django.db.models import Max
+from rest_framework.views import APIView
+from django.core.exceptions import ObjectDoesNotExist
 
 class AsignaturaView(viewsets.ModelViewSet):
     queryset=Asignatura.objects.all()
@@ -536,3 +538,87 @@ def ObtenerOrganizacion(request,ci_estudiante):
     else:
         organizacion_serializer={}
     return Response(organizacion_serializer)
+
+
+
+# @api_view(['UPDATE'])
+# def ObtenerOrganizacion(request):
+#     datos=request.data
+#     ci_estudiante=datos['ci_estudiante']
+#     organizacion_matriz=datos['organizacion_matriz']
+#     organizacion_departamental=datos['organizacion_departamental']
+#     organizacion_regional=datos['organizacion_regional']
+#     comunidad_sindicato=datos['comunidad_sindicato']
+#     otros=datos['datos']
+#     organizacion=Organizacion.objects.get(ci_estudiante=ci_estudiante)
+#     organizacion.organizacion_matriz=organizacion_matriz
+#     organizacion.organizacion_departamental=organizacion_departamental
+#     organizacion.organizacion_regional=organizacion_regional
+#     organizacion.comunidad_sindicato=comunidad_sindicato
+#     organizacion.otros=otros
+#     organizacion.save()
+#     if organizacion:
+#         organizacion_serializer=OrganizacionSerializer(organizacion).data
+#     else:
+#         organizacion_serializer={}
+#     return Response(organizacion_serializer)
+
+class EditarOrganizacion(APIView):
+    def get(self, request, pk, *args, **kwargs):
+        try:
+            organizacion = OrganizacionSerializer(Organizacion.objects.get(id=pk)).data
+            return Response({'organizacion': organizacion}, status=status.HTTP_200_OK)
+        except Organizacion.DoesNotExist:
+            return Response({'error': 'Organización no encontrada'}, status=status.HTTP_404_NOT_FOUND)
+
+    def post(self, request, pk, *args, **kwargs):
+        try:
+            organizacion = Organizacion.objects.get(id=pk)
+            serializer = OrganizacionSerializer(instance=organizacion, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'message': 'Datos actualizados correctamente'})
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except ObjectDoesNotExist:
+            return Response({'error': 'Datos de organización no encontrada'}, status=status.HTTP_404_NOT_FOUND)
+
+class EditarResponsableEstudiante(APIView):
+    def get(self, request, pk, *args, **kwargs):
+        try:
+            responsable = ResponsableEstudianteSerializer(ResponsableEstudiante.objects.get(id=pk)).data
+            return Response({'responsable': responsable}, status=status.HTTP_200_OK)
+        except ResponsableEstudiante.DoesNotExist:
+            return Response({'error': 'Responsable no encontrada'}, status=status.HTTP_404_NOT_FOUND)
+
+    def post(self, request, pk, *args, **kwargs):
+        try:
+            responsable = ResponsableEstudiante.objects.get(id=pk)
+            serializer = ResponsableEstudianteSerializer(instance=responsable, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'message': 'Datos actualizados correctamente'})
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except ObjectDoesNotExist:
+            return Response({'error': 'Datos de responsable no encontrada'}, status=status.HTTP_404_NOT_FOUND)
+        
+class EditarEducacionPrimaria(APIView):
+    def get(self, request, pk, *args, **kwargs):
+        try:
+            educacion_primaria = EducacionPrimariaSerializer(EducacionPrimaria.objects.get(id=pk)).data
+            return Response({'educacion_primaria': educacion_primaria}, status=status.HTTP_200_OK)
+        except EducacionPrimaria.DoesNotExist:
+            return Response({'error': 'educacion_primaria no encontrada'}, status=status.HTTP_404_NOT_FOUND)
+
+    def post(self, request, pk, *args, **kwargs):
+        try:
+            educacion_primaria = EducacionPrimaria.objects.get(id=pk)
+            serializer = EducacionPrimariaSerializer(instance=educacion_primaria, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'message': 'Datos actualizados correctamente'})
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except ObjectDoesNotExist:
+            return Response({'error': 'Datos de organización no encontrada'}, status=status.HTTP_404_NOT_FOUND)

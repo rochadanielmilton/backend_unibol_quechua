@@ -16,7 +16,7 @@ class AnioCarrera(models.Model):
 class Asignatura(models.Model):
     codigo_asignatura = models.CharField(primary_key=True, max_length=30)
     nombre_asignatura = models.CharField(max_length=150, blank=True, null=True)
-    id_docente = models.ForeignKey('Docente', models.DO_NOTHING, db_column='id_docente', blank=True, null=True)
+    id_docente = models.SmallIntegerField(blank=True, null=True)
     descripcion = models.CharField(max_length=255, blank=True, null=True)
     horas_practicas = models.SmallIntegerField(blank=True, null=True)
     horas_teoricas = models.SmallIntegerField(blank=True, null=True)
@@ -214,6 +214,7 @@ class Docente(models.Model):
     estado = models.CharField(max_length=30, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     modified = models.DateTimeField(auto_now=True, blank=True, null=True)
+    id_asignatura = models.ForeignKey(Asignatura, models.DO_NOTHING, db_column='id_asignatura', blank=True, null=True)
 
     class Meta:
         managed = False

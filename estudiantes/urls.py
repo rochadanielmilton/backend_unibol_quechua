@@ -31,6 +31,10 @@ urlpatterns = [
     path('ObtenerEducacionPrimaria/<int:ci_estudiante>/', views.ObtenerEducacionPrimaria, name='ObtenerEducacionPrimaria'),
     path('ObtenerResponsable/<int:ci_estudiante>/', views.ObtenerResponsable, name='ObtenerResponsable'),
     path('ObtenerOrganizacion/<int:ci_estudiante>/', views.ObtenerOrganizacion, name='ObtenerOrganizacion'),
+
+    path('editarOrganizacion/<int:pk>/', views.EditarOrganizacion.as_view(), name='editarOrganizacion'),
+    path('editarResponsableEstudiante/<int:pk>/', views.EditarResponsableEstudiante.as_view(), name='editarResponsableEstudiante'),
+    path('editarEducacionPrimaria/<int:pk>/', views.EditarEducacionPrimaria.as_view(), name='editarEducacionPrimaria'),
     
 
     

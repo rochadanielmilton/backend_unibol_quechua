@@ -563,14 +563,10 @@ def culminacionMaterias(ci_estudiante):
 def GenerarNuevaBoletaEgresados(ci_estudiante):
     boleta_estudiante=BoletaInscripcion.objects.filter(ci_estudiante=ci_estudiante).first()
     
-    if boleta_estudiante:
-        print("------------",boleta_estudiante.numero_boleta)
-        return boleta_estudiante.numero_boleta
-    else:
-        ultimo_numero=BoletaInscripcion.objects.last()
-        numero_boleta=ultimo_numero.numero_boleta+1
-        gestion=datetime.now().year
-        nuevo_numero_boleta_str = str(ultimo_numero.numero_boleta).zfill(4)
-        BoletaInscripcion.objects.create(numero_boleta=numero_boleta,ci_estudiante=ci_estudiante,gestion=gestion,emitido='si')
-        print("------------",nuevo_numero_boleta_str)
-        return nuevo_numero_boleta_str
+    ultimo_numero=BoletaInscripcion.objects.last()
+    numero_boleta=ultimo_numero.numero_boleta+1
+    gestion=datetime.now().year
+    nuevo_numero_boleta_str = str(ultimo_numero.numero_boleta).zfill(4)
+    BoletaInscripcion.objects.create(numero_boleta=numero_boleta,ci_estudiante=ci_estudiante,gestion=gestion,emitido='si')
+    print("------------",nuevo_numero_boleta_str)
+    return nuevo_numero_boleta_str
