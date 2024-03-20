@@ -37,9 +37,19 @@ class NumerosLetrasSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class AsignaturaSerializer(serializers.ModelSerializer):
+    nombre_docente=serializers.SerializerMethodField()
     class Meta:
         model = Asignatura
         fields = '__all__'
+    def get_nombre_docente(self,asignatura):
+        docente=asignatura.id_docente
+        print("---------",docente)
+        if docente:
+            nombre_docente=docente.nombres+" "+docente.apellidop+" "+ docente.apellidom
+            return nombre_docente
+        else:
+            return None
+    
 class MallaAcademicaSerializer(serializers.ModelSerializer):
     nombre_carrera=serializers.SerializerMethodField()
     nombre_asignatura=serializers.SerializerMethodField()
