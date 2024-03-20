@@ -215,6 +215,8 @@ class Docente(models.Model):
     created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     modified = models.DateTimeField(auto_now=True, blank=True, null=True)
     id_asignatura = models.ForeignKey(Asignatura, models.DO_NOTHING, db_column='id_asignatura', blank=True, null=True)
+    correo = models.CharField(max_length=150, blank=True, null=True)
+    numero_item = models.SmallIntegerField(blank=True, null=True)
 
     class Meta:
         managed = False

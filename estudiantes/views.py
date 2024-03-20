@@ -86,6 +86,7 @@ def ObtenerHitorialAcademico2(request,ci_estudiante):
         grado=VerificarGrado(ci_estudiante)
         fecha_hora=datetime.now()
         fecha_emision = fecha_hora.strftime("%Y-%m-%d %H:%M:%S")
+        #fecha_emision='2023-03-20 09:07:57'
                
         materias_tomadas=[]
         estudiante_serializer=EstudianteHistorialSerializer(estudiante).data
@@ -94,7 +95,7 @@ def ObtenerHitorialAcademico2(request,ci_estudiante):
         total_horas_vencidas=0
         for asignatura in asignaturas_cursadas:
             asig=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_asignatura)
-            if asignatura.estado_gestion_espaniol=='APR.':# and asig.anio_asignado in['PRIMERO','SEGUNDO','TERCERO'] and asignatura.codigo_malla_ajustada!='LCTA 401':
+            if asignatura.estado_gestion_espaniol=='APR.': #and asignatura.anio_cursado!='2023':# and asig.anio_asignado in['PRIMERO','SEGUNDO','TERCERO'] and asignatura.codigo_malla_ajustada!='LCTA 401':
                 auxiliar=[]
                 if asignatura.malla_aplicada=='2018' and asignatura.homologacion=='SI':
                     #if asig.anio_asignado in['PRIMERO','SEGUNDO','TERCERO'] and asignatura.codigo_malla_ajustada!='LCTA 401':
@@ -165,7 +166,7 @@ def ObtenerHitorialAcademicoAvanceGeneral(request,ci_estudiante):
                
         materias_tomadas=[]
         estudiante_serializer=EstudianteHistorialSerializer(estudiante).data
-        asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).order_by('anio_cursado')
+        asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).order_by('anio_cursado','codigo_asignatura')
         otros_datos= estadisticas_materias_general(ci_estudiante)
         for asignatura in asignaturas_cursadas:
             auxiliar=[]
