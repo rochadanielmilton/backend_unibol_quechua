@@ -50,34 +50,6 @@ class NotaEstudianteView(viewsets.ModelViewSet):
     serializer_class=NotaEstudianteSerializer
     
 
-
-# @api_view(['GET'])
-# def ObtenerHitorialAcademico(request,ci_estudiante):
-#     estudiante=Estudiante.objects.filter(ci_estudiante=ci_estudiante)
-#     if estudiante:
-        
-#         grado=VerificarGrado(ci_estudiante)
-#         fecha_hora=datetime.now()
-#         fecha_emision = fecha_hora.strftime("%Y-%m-%d %H:%M:%S")
-               
-       
-#         estudiante_serializer=EstudianteHistorialSerializer(estudiante.first()).data
-#         asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).order_by('anio_cursado')
-#         if asignaturas_cursadas:
-#             otros_datos= estadisticas_materias(ci_estudiante)
-#             serializer_asignaturas_cursadas=AsignaturaCursadaSerializer(asignaturas_cursadas, many=True).data
-#             return Response({"estudiante":estudiante_serializer,
-#                     "grado":grado,
-#                     "fecha_emision":fecha_emision,
-#                     "datos":serializer_asignaturas_cursadas,
-#                     "otros_datos":otros_datos
-#                     })
-#         else:
-#             return Response({"message":"El estudiante no cuenta con ninguna materia registrada"})
-#     else:
-#         return Response({"Message":"El ci ingresado no coincide con ningun registro"})
-
-
 @api_view(['GET'])
 def ObtenerHitorialAcademico2(request,ci_estudiante):
     estudiante=Estudiante.objects.filter(ci_estudiante=ci_estudiante).first()
@@ -226,6 +198,7 @@ def ObtenerHitorialAcademicoAvanceGeneral(request,ci_estudiante):
 
 def estadisticas_materias_malla_2023(ci_estudiante):
     # Filtrar las asignaturas cursadas
+    #, anio_cursado__ne='2023'
     asignaturas_aprobadas = AsignaturaCursada.objects.filter(id_nota__resultado_gestion_espaniol='APR.',ci_estudiante=ci_estudiante).exclude(homologacion='NO',malla_aplicada='2018')
     if asignaturas_aprobadas:
         cantidad_aprobadas = asignaturas_aprobadas.count()
@@ -243,7 +216,8 @@ def estadisticas_materias_malla_2023(ci_estudiante):
         promedio_aprobadas_redondeado=0
 
         # Obtener estadísticas de todas las materias cursadas
-    asignaturas_todas = AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante ).exclude(homologacion='NO',malla_aplicada='2018').exclude(estado_gestion_espaniol='ABANDONO')
+        #, anio_cursado__ne='2023'
+    asignaturas_todas = AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).exclude(homologacion='NO',malla_aplicada='2018').exclude(estado_gestion_espaniol='ABANDONO')
     if asignaturas_todas:
         cantidad_todas = asignaturas_todas.count()
         print("-------", cantidad_todas)
@@ -327,43 +301,6 @@ def VerificarGrado(ci_estudiante):
 
     return resultado
 
-# @api_view(['GET'])
-# def ObtenerMateriasAprobadas(request,ci_estudiante):
-#     estudiante=Estudiante.objects.filter(ci_estudiante=ci_estudiante)
-#     grado=VerificarGrado(ci_estudiante)
-#     fecha_hora=datetime.now()
-#     fecha_emision = fecha_hora.strftime("%Y-%m-%d %H:%M:%S")
-#     otros_datos= estadisticas_materias_aprobadas(ci_estudiante)
-#     if not estudiante:
-#         return Response({"message":"El CI que ingreso no corresponde a ningun estudiante registrado"})
-#     else:
-#         estudiante_serializer=EstudianteHistorialSerializer(estudiante.first()).data
-#         asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante,estado_gestion_espaniol='APROBADO')
-#         serializer_asignaturas_cursadas=AsignaturaCursadaSerializer(asignaturas_cursadas, many=True).data
-#         return Response({"estudiante":estudiante_serializer,
-#                          "grado":grado,
-#                          "fecha_emision":fecha_emision,
-#                         "datos":serializer_asignaturas_cursadas,
-#                         "otros_datos":otros_datos
-#                         })
-# def estadisticas_materias_aprobadas(ci_estudiante):
-#     # Filtrar las asignaturas cursadas que tienen una nota final aprobada
-#     asignaturas_aprobadas = AsignaturaCursada.objects.filter(
-#     id_nota__resultado_gestion_espaniol='APROBADO',
-#     ci_estudiante=ci_estudiante
-#     )
-#     # Obtener la cantidad de asignaturas aprobadas
-#     cantidad_aprobadas = asignaturas_aprobadas.count()
-
-#     # Obtener el promedio de las notas finales de las asignaturas aprobadas
-#     promedio_aprobadas = asignaturas_aprobadas.aggregate(Avg('id_nota__nota_num_final'))['id_nota__nota_num_final__avg']
-#     promedio_aprobadas_redondeado=round(promedio_aprobadas,2)
-
-#     return {
-#         'cantidad_aprobadas': cantidad_aprobadas,
-#         'promedio_aprobadas': promedio_aprobadas_redondeado,
-
-#     }
 
 def actualizar_anio_cursado(ci_estudiante):
     asignaturas_aprobadas = AsignaturaCursada.objects.filter(
@@ -409,32 +346,6 @@ def obtenerUltimo_numero_registrado(codigo_carrera):
         ultimo_estudiante=Estudiante.objects.filter(codigo_carrera=codigo_carrera).aggregate(max_numero_archivo=Max('numero_archivo'))['max_numero_archivo'] 
         print("------------",ultimo_estudiante)
     return ultimo_estudiante
-
-# @api_view(['GET'])
-# def obtenerCertificacionGestionAnterior(request,ci_estudiante):
-#     estudiante=Estudiante.objects.filter(ci_estudiante=ci_estudiante)
-#     if estudiante:
-        
-#         grado=VerificarGrado(ci_estudiante)
-#         fecha_hora=datetime.now()
-#         fecha_emision = fecha_hora.strftime("%Y-%m-%d %H:%M:%S")
-#         anio_anterior = str(datetime.now().year-1)
-               
-       
-#         estudiante_serializer=EstudianteHistorialSerializer(estudiante.first()).data
-#         asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante,anio_cursado=anio_anterior )
-#         if asignaturas_cursadas:
-#             #otros_datos= estadisticas_materias(ci_estudiante)
-#             serializer_asignaturas_cursadas=AsignaturaCursadaSerializer(asignaturas_cursadas, many=True).data
-#             return Response({"estudiante":estudiante_serializer,
-#                     "grado":grado,
-#                     "fecha_emision":fecha_emision,
-#                     "datos":serializer_asignaturas_cursadas                    
-#                     })
-#         else:
-#             return Response({"message":"El estudiante no cuenta con ninguna materia registrada"})
-#     else:
-#         return Response({"Message":"El ci ingresado no coincide con ningun registro"})
  
 @api_view(['GET'])
 def obtenerCertificacionPorGestion(request,ci_estudiante,anio):
@@ -540,29 +451,6 @@ def ObtenerOrganizacion(request,ci_estudiante):
         organizacion_serializer={}
     return Response(organizacion_serializer)
 
-
-
-# @api_view(['UPDATE'])
-# def ObtenerOrganizacion(request):
-#     datos=request.data
-#     ci_estudiante=datos['ci_estudiante']
-#     organizacion_matriz=datos['organizacion_matriz']
-#     organizacion_departamental=datos['organizacion_departamental']
-#     organizacion_regional=datos['organizacion_regional']
-#     comunidad_sindicato=datos['comunidad_sindicato']
-#     otros=datos['datos']
-#     organizacion=Organizacion.objects.get(ci_estudiante=ci_estudiante)
-#     organizacion.organizacion_matriz=organizacion_matriz
-#     organizacion.organizacion_departamental=organizacion_departamental
-#     organizacion.organizacion_regional=organizacion_regional
-#     organizacion.comunidad_sindicato=comunidad_sindicato
-#     organizacion.otros=otros
-#     organizacion.save()
-#     if organizacion:
-#         organizacion_serializer=OrganizacionSerializer(organizacion).data
-#     else:
-#         organizacion_serializer={}
-#     return Response(organizacion_serializer)
 
 class EditarOrganizacion(APIView):
     def get(self, request, pk, *args, **kwargs):
