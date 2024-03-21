@@ -243,6 +243,7 @@ def RegistrarNueboEstudiante(request,ci_postulante):
     #------------registro de nuevo estudiante del curso preparatorio---------
     try:
         postulante=PostulantePrepa.objects.get(ci_postulante=ci_postulante)
+        #print("--------",postulante)
         numero_registro=str(datetime.now().year)+str(datetime.now().month).zfill(2)+ str(ObtenerNumeroRegistro()).zfill(4)
         carrera_nueva=ObtenerCodigoCarrera(postulante.carrera)
         nuevo_estudiante=Estudiante.objects.create(ci_estudiante=ci_postulante,extencion=postulante.extension_ci,
@@ -255,9 +256,11 @@ def RegistrarNueboEstudiante(request,ci_postulante):
                                                    idioma_nativo=postulante.lengua_que_habla,email=postulante.email_postulante,
                                                    anio_ingreso=(datetime.now().year),
                                                    numero_archivo=obtenerUltimoNumeroRegistrado(carrera_nueva.codigo_carrera),homologacion='no',
-                                                   convalidacion='no',egresado='no',titulado='no',estado='habilitado',baja='no',
+                                                   convalidacion='no',titulado_tecnico_superior='no',titulado_licenciatura='no',estado='habilitado',baja='no',
                                                    numero_registro=numero_registro,anio_cursado='PRIMER AÑO',inscrito_gestion='no')
-        if nuevo_estudiante:                                           
+        
+        if nuevo_estudiante:
+                                                      
             respuesta['Estudiante']='Se registro los datos del estudiante correctamente'
             postulante.registrado='si'
             postulante.save()
