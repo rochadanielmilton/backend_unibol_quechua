@@ -59,7 +59,7 @@ def ObtenerHitorialAcademico2(request,ci_estudiante):
         fecha_hora=datetime.now()
         fecha_emision = fecha_hora.strftime("%Y-%m-%d %H:%M:%S")
         #fecha_emision='2023-03-20 09:07:57'
-               
+        #asignaturas_4_5=['LCTA 401','LCTA 402','LCTA 403','LCTA 404','LCTA 405','LCTA 406','LCTA 407','LCTA 408']       
         materias_tomadas=[]
         estudiante_serializer=EstudianteHistorialSerializer(estudiante).data
         asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).order_by('anio_cursado','codigo_asignatura')
@@ -69,7 +69,7 @@ def ObtenerHitorialAcademico2(request,ci_estudiante):
             asig=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_asignatura)
             if asignatura.estado_gestion_espaniol=='APR.': #and asignatura.anio_cursado!='2023':# and asig.anio_asignado in['PRIMERO','SEGUNDO','TERCERO'] and asignatura.codigo_malla_ajustada!='LCTA 401':
                 auxiliar=[]
-                if asignatura.malla_aplicada=='2018' and asignatura.homologacion=='SI':
+                if asignatura.malla_aplicada=='2018' and asignatura.homologacion=='SI':# and asignatura.codigo_asignatura not in asignaturas_4_5 and asignatura.codigo_malla_ajustada not in asignaturas_4_5:
                     #if asig.anio_asignado in['PRIMERO','SEGUNDO','TERCERO'] and asignatura.codigo_malla_ajustada!='LCTA 401':
                         auxiliar.append(asignatura.anio_cursado)
                         auxiliar.append(asignatura.codigo_malla_ajustada)
@@ -99,7 +99,7 @@ def ObtenerHitorialAcademico2(request,ci_estudiante):
                 #     auxiliar.append(asignatura.homologacion)
                 #     materias_tomadas.append(auxiliar)
                 #     print(asignatura.anio_cursado," - ",asignatura.codigo_asignatura," = ",materia.asignatura_malla_2018," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
-                elif asignatura.malla_aplicada=='2023' and asignatura.estado_gestion_espaniol!='ABANDONO':#and asig.anio_asignado in['PRIMERO','SEGUNDO','TERCERO']:
+                elif asignatura.malla_aplicada=='2023' and asignatura.estado_gestion_espaniol!='ABANDONO':# and asignatura.codigo_asignatura not in asignaturas_4_5 and asignatura.codigo_malla_ajustada not in asignaturas_4_5:#and asig.anio_asignado in['PRIMERO','SEGUNDO','TERCERO']:
                     auxiliar.append(asignatura.anio_cursado)
                     auxiliar.append(asignatura.codigo_asignatura)
                     materia=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_asignatura)
@@ -199,7 +199,8 @@ def ObtenerHitorialAcademicoAvanceGeneral(request,ci_estudiante):
 def estadisticas_materias_malla_2023(ci_estudiante):
     # Filtrar las asignaturas cursadas
     #, anio_cursado__ne='2023'
-    asignaturas_aprobadas = AsignaturaCursada.objects.filter(id_nota__resultado_gestion_espaniol='APR.',ci_estudiante=ci_estudiante).exclude(homologacion='NO',malla_aplicada='2018')
+    #asignaturas_4_5=['LCTA 401','LCTA 402','LCTA 403','LCTA 404','LCTA 405','LCTA 406','LCTA 407','LCTA 408']
+    asignaturas_aprobadas = AsignaturaCursada.objects.filter(id_nota__resultado_gestion_espaniol='APR.',ci_estudiante=ci_estudiante).exclude(homologacion='NO',malla_aplicada='2018')#.exclude(codigo_asignatura__in=asignaturas_4_5).exclude(codigo_malla_ajustada__in=asignaturas_4_5)
     if asignaturas_aprobadas:
         cantidad_aprobadas = asignaturas_aprobadas.count()
         print("-------", cantidad_aprobadas)
@@ -217,7 +218,7 @@ def estadisticas_materias_malla_2023(ci_estudiante):
 
         # Obtener estadísticas de todas las materias cursadas
         #, anio_cursado__ne='2023'
-    asignaturas_todas = AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).exclude(homologacion='NO',malla_aplicada='2018').exclude(estado_gestion_espaniol='ABANDONO')
+    asignaturas_todas = AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).exclude(homologacion='NO',malla_aplicada='2018').exclude(estado_gestion_espaniol='ABANDONO')#.exclude(codigo_asignatura__in=asignaturas_4_5).exclude(codigo_malla_ajustada__in=asignaturas_4_5)
     if asignaturas_todas:
         cantidad_todas = asignaturas_todas.count()
         print("-------", cantidad_todas)
@@ -291,7 +292,7 @@ def estadisticas_materias_general(ci_estudiante):
 def VerificarGrado(ci_estudiante):
     asignaturas_cursadas = AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).exclude(estado_gestion_espaniol='ABANDONO').values_list('codigo_asignatura', flat=True)
     asignaturas_licenciatura = AsignaturasLicenciatura.objects.values_list('codigo_asignatura', flat=True)
-    print("--------",asignaturas_cursadas)
+    #print("--------",asignaturas_cursadas)
     resultado = 'TÉCNICO SUPERIOR'
 
     for asignatura_cursada in asignaturas_cursadas:
@@ -356,10 +357,10 @@ def obtenerCertificacionPorGestion(request,ci_estudiante,anio):
         fecha_hora=datetime.now()
         fecha_emision = fecha_hora.strftime("%Y-%m-%d %H:%M:%S")
         #anio_anterior = str(datetime.now().year-1)
-               
+        #asignaturas_4_5=['LCTA 401','LCTA 402','LCTA 403','LCTA 404','LCTA 405','LCTA 406','LCTA 407','LCTA 408']       
        
         estudiante_serializer=EstudianteHistorialSerializer(estudiante.first()).data
-        asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante,anio_cursado=anio ).order_by('codigo_asignatura')
+        asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante,anio_cursado=anio ).order_by('codigo_asignatura')#.exclude(codigo_asignatura__in=asignaturas_4_5).exclude(codigo_malla_ajustada__in=asignaturas_4_5)
         if asignaturas_cursadas:
             materias_tomadas=[]
             cont=1

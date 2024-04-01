@@ -101,17 +101,45 @@ def ObenerAsignaturasNoCursadas(request,ci_estudiante):
         for asig in asignaturas_cursadas:        
             concluido = asig.estado_gestion_espaniol
             if concluido == 'APR.':
-                #if asig.malla_aplicada!='2018' and asig.homologacion!='NO':
-                    lista_asignaturas_aprobadas.append(asig.id_malla_academica.codigo_asignatura.codigo_asignatura)
-                    lista_asignaturas_aprobadas.append(asig.convalidacion)
-                    if asig.codigo_malla_ajustada!='-':
+                # #if asig.malla_aplicada!='2018' and asig.homologacion!='NO':
+                #     lista_asignaturas_aprobadas.append(asig.id_malla_academica.codigo_asignatura.codigo_asignatura)
+                #     lista_asignaturas_aprobadas.append(asig.convalidacion)
+                #     if asig.codigo_malla_ajustada!='-':
+                #         lista_asignaturas_aprobadas.append(asig.codigo_malla_ajustada)
+                #     if asig.codigo_asignatura==asig.codigo_malla_ajustada:
+                #         lista_asignaturas_aprobadas.append(asig.codigo_asignatura)                
+#--------------------------------------------------------------------------------------------
+
+                    if asig.malla_aplicada=='2018' and asig.homologacion=='SI':
+                    #if asig.anio_asignado in['PRIMERO','SEGUNDO','TERCERO'] and asignatura.codigo_malla_ajustada!='LCTA 401':
                         lista_asignaturas_aprobadas.append(asig.codigo_malla_ajustada)
-                    if asig.codigo_asignatura==asig.codigo_malla_ajustada:
-                        lista_asignaturas_aprobadas.append(asig.codigo_asignatura)                
+                        if asig.convalidacion:
+                            lista_asignaturas_aprobadas.append(asig.convalidacion)
+                       
+                    #print(asignatura.anio_cursado," - ",asignatura.codigo_malla_ajustada," = ",materia.nombre_asignatura," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
                 
-            if asig.codigo_asignatura=='TSAA 107' and asig.estado_gestion_espaniol=='REP.':
-                if 'TSAA 107' in lista_asignaturas_aprobadas:
-                    lista_asignaturas_aprobadas.remove('TSAA 107')
+                # elif asignatura.malla_aplicada=='2018'and  asignatura.homologacion=='NO':
+                #     auxiliar.append(asignatura.anio_cursado)
+                #     auxiliar.append(asignatura.codigo_asignatura)
+                #     materia=Asignatura.objects.get(codigo_asignatura=asignatura.codigo_asignatura)
+                #     auxiliar.append(materia.asignatura_malla_2018)
+                #     auxiliar.append(materia.total_horas)
+                #     auxiliar.append((materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1)
+                #     auxiliar.append(asignatura.id_nota.nota_num_final)
+                #     auxiliar.append(asignatura.id_nota.resultado_gestion_espaniol)
+                #     auxiliar.append(asignatura.homologacion)
+                #     materias_tomadas.append(auxiliar)
+                #     print(asignatura.anio_cursado," - ",asignatura.codigo_asignatura," = ",materia.asignatura_malla_2018," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
+                    elif asig.malla_aplicada=='2023' and asig.estado_gestion_espaniol!='ABANDONO':#and asig.anio_asignado in['PRIMERO','SEGUNDO','TERCERO']:
+                        lista_asignaturas_aprobadas.append(asig.codigo_malla_ajustada)
+                        if asig.convalidacion:
+                            lista_asignaturas_aprobadas.append(asig.convalidacion)
+
+#-------------------------------------------------------------------------------------
+
+            # if asig.codigo_asignatura=='TSAA 107' and asig.estado_gestion_espaniol=='REP.':
+            #     if 'TSAA 107' in lista_asignaturas_aprobadas:
+            #         lista_asignaturas_aprobadas.remove('TSAA 107')
 
         malla_estudiante=MallaAcademica.objects.filter(codigo_carrera=estudiante.codigo_carrera).exclude(codigo_asignatura__in=lista_asignaturas_aprobadas)
         if malla_estudiante:
@@ -453,11 +481,11 @@ def reimprimirInscripcion(request,ci_estudiante):
     asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante,anio_cursado=ultimo_año)
     asignaturas_cursadas_serializer=AsignaturasCursadasSerializerReImpresion(asignaturas_cursadas,many=True).data
     
-    lista_asignaturas_anio_anterior=AsignaturaCursada.objects.filter(anio_cursado=anio_aterior,ci_estudiante=ci_estudiante).order_by('codigo_asignatura')
+    lista_asignaturas_anio_anterior=AsignaturaCursada.objects.filter(anio_cursado=anio_aterior,ci_estudiante=ci_estudiante).exclude(malla_aplicada='2018',homologacion='NO').order_by('codigo_asignatura')
     if not lista_asignaturas_anio_anterior:
         anio_aterior=str(datetime.now().year-2)
         #ultimo_año=str(datetime.now().year)
-        lista_asignaturas_anio_anterior=AsignaturaCursada.objects.filter(anio_cursado=anio_aterior,ci_estudiante=ci_estudiante).order_by('codigo_asignatura')
+        lista_asignaturas_anio_anterior=AsignaturaCursada.objects.filter(anio_cursado=anio_aterior,ci_estudiante=ci_estudiante).exclude(malla_aplicada='2018',homologacion='NO').order_by('codigo_asignatura')
     lista_asignaturas_anio_anterior_serializer=AsignaturaCursadaAnioAnteriorSerializer(lista_asignaturas_anio_anterior,many=True).data
     
 
