@@ -308,6 +308,8 @@ class Estudiante(models.Model):
     obs3 = models.TextField(blank=True, null=True)
     ci_especial=models.CharField(max_length=30,blank=True,null=True,db_comment='ci especial')
     inscrito_gestion = models.CharField(max_length=20, blank=True, null=True, db_comment='si el estudiante esta inscrito a esta gestion')
+    interno=models.CharField(max_length=10,blank=True,null=True)
+    observacion_interno=models.CharField(max_length=255,blank=True,null=True)
 
     class Meta:
         managed = False

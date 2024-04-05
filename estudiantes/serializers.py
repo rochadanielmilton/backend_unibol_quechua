@@ -39,7 +39,7 @@ class AsignaturaCursadaSerializer(serializers.ModelSerializer):
     nota_literal_quechua=serializers.SerializerMethodField()
     class Meta:
         model = AsignaturaCursada
-        fields = ('ci_estudiante','codigo_asignatura','convalidacion','homologacion','anio_cursado','estado_gestion_espaniol','nota_num_final','nombre_asignatura','total_horas','pre_requisitos','nota_literal_quechua')
+        fields = ('ci_estudiante','ci_especial','codigo_asignatura','convalidacion','homologacion','anio_cursado','estado_gestion_espaniol','nota_num_final','nombre_asignatura','total_horas','pre_requisitos','nota_literal_quechua')
 
     def get_nota_num_final(self, asignatura):
         nota =asignatura.id_nota
@@ -91,7 +91,7 @@ class EstudianteHistorialSerializer(serializers.ModelSerializer):
     nombre_carrera=serializers.SerializerMethodField()
     class Meta:
         model =Estudiante
-        fields =('ci_estudiante','nombres','apellidoP','apellidoM','numero_registro','nombre_carrera','anio_ingreso')
+        fields =('ci_estudiante','ci_especial','nombres','apellidoP','apellidoM','numero_registro','nombre_carrera','anio_ingreso')
     def get_nombre_carrera(self,estudiante):
         carrera=estudiante.codigo_carrera
         return carrera.nombre_carrera if carrera else None

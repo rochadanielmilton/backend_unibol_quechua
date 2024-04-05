@@ -22,7 +22,7 @@ class EstudianteRegularesView(viewsets.ModelViewSet):
     # authentication_classes = [JWTAuthentication]
     # permission_classes = [IsAuthenticated]
     anio_actual=str(datetime.now().year)
-    queryset = Estudiante.objects.filter(estado='habilitado',baja='no').order_by('anio_ingreso')   
+    queryset = Estudiante.objects.filter(estado='habilitado',baja='no').order_by('anio_ingreso','numero_registro')   
     serializer_class = EstudianteSerializer
 
 class DocumentacionEstudianteView(viewsets.ModelViewSet):
@@ -54,12 +54,11 @@ class NotaEstudianteView(viewsets.ModelViewSet):
 def ObtenerHitorialAcademico2(request,ci_estudiante):
     estudiante=Estudiante.objects.filter(ci_estudiante=ci_estudiante).first()
     if estudiante:
-        #print("+++++++++++",estudiante.codigo_carrera)   and estudiante.codigo_carrera.codigo_carrera!='TIAL'
         grado=VerificarGrado(ci_estudiante)
         fecha_hora=datetime.now()
         fecha_emision = fecha_hora.strftime("%Y-%m-%d %H:%M:%S")
-        #fecha_emision='2023-03-20 09:07:57'
-        #asignaturas_4_5=['LCTA 401','LCTA 402','LCTA 403','LCTA 404','LCTA 405','LCTA 406','LCTA 407','LCTA 408']       
+        #fecha_emision='13 - 12 - 2023'
+        #asignaturas_4_5=['LCAC 401','LCAC 402','LCAC 403','LCAC 404','LCAC 405','LCAC 406','LCAC 407','LCAC 408']       
         materias_tomadas=[]
         estudiante_serializer=EstudianteHistorialSerializer(estudiante).data
         asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).order_by('anio_cursado','codigo_asignatura')
@@ -199,7 +198,7 @@ def ObtenerHitorialAcademicoAvanceGeneral(request,ci_estudiante):
 def estadisticas_materias_malla_2023(ci_estudiante):
     # Filtrar las asignaturas cursadas
     #, anio_cursado__ne='2023'
-    #asignaturas_4_5=['LCTA 401','LCTA 402','LCTA 403','LCTA 404','LCTA 405','LCTA 406','LCTA 407','LCTA 408']
+    #asignaturas_4_5=['LCAC 401','LCAC 402','LCAC 403','LCAC 404','LCAC 405','LCAC 406','LCAC 407','LCAC 408']
     asignaturas_aprobadas = AsignaturaCursada.objects.filter(id_nota__resultado_gestion_espaniol='APR.',ci_estudiante=ci_estudiante).exclude(homologacion='NO',malla_aplicada='2018')#.exclude(codigo_asignatura__in=asignaturas_4_5).exclude(codigo_malla_ajustada__in=asignaturas_4_5)
     if asignaturas_aprobadas:
         cantidad_aprobadas = asignaturas_aprobadas.count()
@@ -357,7 +356,7 @@ def obtenerCertificacionPorGestion(request,ci_estudiante,anio):
         fecha_hora=datetime.now()
         fecha_emision = fecha_hora.strftime("%Y-%m-%d %H:%M:%S")
         #anio_anterior = str(datetime.now().year-1)
-        #asignaturas_4_5=['LCTA 401','LCTA 402','LCTA 403','LCTA 404','LCTA 405','LCTA 406','LCTA 407','LCTA 408']       
+        #asignaturas_4_5=['LCAC 401','LCAC 402','LCAC 403','LCAC 404','LCAC 405','LCAC 406','LCAC 407','LCAC 408']      
        
         estudiante_serializer=EstudianteHistorialSerializer(estudiante.first()).data
         asignaturas_cursadas=AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante,anio_cursado=anio ).order_by('codigo_asignatura')#.exclude(codigo_asignatura__in=asignaturas_4_5).exclude(codigo_malla_ajustada__in=asignaturas_4_5)
