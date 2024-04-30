@@ -216,6 +216,7 @@ class Docente(models.Model):
     modified = models.DateTimeField(auto_now=True, blank=True, null=True)
     correo = models.CharField(max_length=150, blank=True, null=True)
     numero_item = models.SmallIntegerField(blank=True, null=True)
+    complemento_ci = models.CharField(max_length=10, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -310,7 +311,8 @@ class Estudiante(models.Model):
     inscrito_gestion = models.CharField(max_length=20, blank=True, null=True, db_comment='si el estudiante esta inscrito a esta gestion')
     interno=models.CharField(max_length=10,blank=True,null=True)
     observacion_interno=models.CharField(max_length=255,blank=True,null=True)
-
+    inscrito_defensa = models.CharField(max_length=10, blank=True, null=True)
+    observacion_defensa = models.CharField(max_length=255, blank=True, null=True)
     class Meta:
         managed = False
         db_table = 'estudiante'

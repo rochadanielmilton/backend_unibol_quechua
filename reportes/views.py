@@ -53,7 +53,7 @@ def EstudiantesInscritosPorCarreraAnio(request):
 def EstudiantesCarreraAnio(request,codigo_carrera,anio_cursado):
     try:
         if codigo_carrera=='0' and anio_cursado=='0':
-            estudiante = Estudiante.objects.filter(inscrito_gestion='si', anio_cursado__in=['PRIMER AÑO', 'SEGUNDO AÑO', 'TERCER AÑO', 'CUARTO AÑO', 'QUINTO AÑO']).order_by('anio_cursado')
+            estudiante = Estudiante.objects.filter(inscrito_gestion='si', anio_cursado__in=['PRIMER AÑO', 'SEGUNDO AÑO', 'TERCER AÑO', 'CUARTO AÑO', 'QUINTO AÑO']).order_by('apellidoP')
             estudiante_serializer=EstudianteCarreraAnioSerializer(estudiante,many=True).data 
             nombre_carrera='TODOS'
             numero_estudiantes=estudiante.count()
@@ -64,7 +64,7 @@ def EstudiantesCarreraAnio(request,codigo_carrera,anio_cursado):
                             "estudiantes":estudiante_serializer})
     
         if codigo_carrera!='0' and anio_cursado=='0':
-            estudiante=Estudiante.objects.filter(codigo_carrera=codigo_carrera, inscrito_gestion='si',anio_cursado__in=['PRIMER AÑO', 'SEGUNDO AÑO', 'TERCER AÑO', 'CUARTO AÑO', 'QUINTO AÑO']).order_by('anio_cursado')
+            estudiante=Estudiante.objects.filter(codigo_carrera=codigo_carrera, inscrito_gestion='si',anio_cursado__in=['PRIMER AÑO', 'SEGUNDO AÑO', 'TERCER AÑO', 'CUARTO AÑO', 'QUINTO AÑO']).order_by('apellidoP') 
             estudiante_serializer=EstudianteCarreraAnioSerializer(estudiante,many=True).data       
             nombre_carrera=Carrera.objects.filter(codigo_carrera=codigo_carrera).first().nombre_carrera
             numero_estudiantes=estudiante.count()
@@ -76,7 +76,7 @@ def EstudiantesCarreraAnio(request,codigo_carrera,anio_cursado):
     
         if codigo_carrera!='0' and anio_cursado!='0':
             
-            estudiante=Estudiante.objects.filter(codigo_carrera=codigo_carrera,anio_cursado=anio_cursado, inscrito_gestion='si').order_by('anio_cursado')            
+            estudiante=Estudiante.objects.filter(codigo_carrera=codigo_carrera,anio_cursado=anio_cursado, inscrito_gestion='si').order_by('apellidoP')            
             estudiante_serializer=EstudianteCarreraAnioSerializer(estudiante,many=True).data
             nombre_carrera=Carrera.objects.filter(codigo_carrera=codigo_carrera).first().nombre_carrera
             numero_estudiantes=estudiante.count()

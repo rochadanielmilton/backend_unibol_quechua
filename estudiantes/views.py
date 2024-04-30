@@ -355,6 +355,7 @@ def obtenerCertificacionPorGestion(request,ci_estudiante,anio):
         grado=VerificarGrado(ci_estudiante)
         fecha_hora=datetime.now()
         fecha_emision = fecha_hora.strftime("%Y-%m-%d %H:%M:%S")
+        #fecha_emision = '2024-02-29'
         #anio_anterior = str(datetime.now().year-1)
         #asignaturas_4_5=['LCAC 401','LCAC 402','LCAC 403','LCAC 404','LCAC 405','LCAC 406','LCAC 407','LCAC 408']      
        

@@ -264,7 +264,7 @@ def ObtenerPostulates(request):
     else:
         return Response({"message":"error al optener los postulantes"},status=status.HTTP_400_BAD_REQUEST)
     
-
+#===============================funcion que permite registrar un estudiante de preparatoria como estudiante regular=============
 @api_view(['GET']) 
 def RegistrarNueboEstudiante(request,ci_postulante):
     respuesta={}
@@ -341,7 +341,7 @@ def RegistrarNueboEstudiante(request,ci_postulante):
         respuesta['datos secundaria']="error al intentar registrar los datos academicos secundaria"
     
     return Response(respuesta)
-
+#====================funcion que permite obtener el codigo de carrera===========
 def ObtenerCodigoCarrera(carrera):
     if carrera=='INGENIERIA EN AGROFORESTERIA COMUNITARIA ECOLOGICA':
         return Carrera.objects.get(codigo_carrera='AGRF')
@@ -351,7 +351,7 @@ def ObtenerCodigoCarrera(carrera):
         return Carrera.objects.get(codigo_carrera='ECOP')
     if carrera=='INGENIERIA EN ACUICULTURA COMUNITARIA Y GESTION DE AGUA':
         return Carrera.objects.get(codigo_carrera='ACUC')
-
+#========================funcion que permite obtener el numero de registro o numero de boleto con la que se inscribio==============
 def ObtenerNumeroRegistro():
     ultimo_numero_registro=ControlNumeroRegistro.objects.last()
     if ultimo_numero_registro:
@@ -361,7 +361,8 @@ def ObtenerNumeroRegistro():
     else:
         nuevo=ControlNumeroRegistro.objects.create(numero_registro=1,gestion=str(datetime.now().year))
         return nuevo.numero_registro
-    
+
+#=================funcion que permite obtener el ultimo numero registrado de cada carrera para la asignacion a un nuevo estudiante===============   
 def obtenerUltimoNumeroRegistrado(codigo_carrera):
     print("------------",codigo_carrera)
     if codigo_carrera=='ACUC':
@@ -372,7 +373,7 @@ def obtenerUltimoNumeroRegistrado(codigo_carrera):
         ultimo_estudiante=Estudiante.objects.filter(codigo_carrera=codigo_carrera).aggregate(max_numero_archivo=Max('numero_archivo'))['max_numero_archivo'] 
         print("------------",ultimo_estudiante)
         return ultimo_estudiante+1    
-
+#==============================funcion permite eliminar el registro de un estudiante que haya sido registrado por error como estudiante regular======
 @api_view(['DELETE']) 
 def EliminarDatos(request,ci_estudiante):
     AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante).delete()
@@ -383,7 +384,7 @@ def EliminarDatos(request,ci_estudiante):
     Estudiante.objects.filter(ci_estudiante=ci_estudiante).delete()
     return Response({"message":"los datos se eliminarion correctamente"},status=status.HTTP_200_OK)
 
-
+#===========================permite la inscripcion de estudiantes nuevos a las asignaturas de primer año==================
 @api_view(['GET'])
 def InscribirEstudiantePrimerAnio(request,ci_estudiante):
     try:
@@ -417,6 +418,7 @@ def InscribirEstudiantePrimerAnio(request,ci_estudiante):
     #                              "fecha_emision":fecha_emision,
     #                              "numero_boleta":numero_boleta,})
 
+#===================funcion que permite registrar materias asignadas a un estudiante============================
 def RegistrarMateriasPrimerAnio(estudiante,lista_asignaturas_malla):
     for asignatura_malla in lista_asignaturas_malla:
         #estudiante=Estudiante.objects.get(ci_estudiante=ci_estudiante)
@@ -464,11 +466,12 @@ def RegistrarMateriasPrimerAnio(estudiante,lista_asignaturas_malla):
                                  "numero_boleta":numero_boleta,
                                  'numero_archivo':numero_archivo})
 
+#======================funcion que permite obtener el numero de archivo del estudiante=====================
 def obtenerNumeroArchivo(ci_estudiante):
     estudiante=Estudiante.objects.get(ci_estudiante=ci_estudiante)
     return estudiante.numero_archivo
 
-
+#=============================funcion que permite la reimpresion de materias tomadas por un estudiante===============================
 @api_view(['GET']) 
 def reimprimirInscripcion(request,ci_estudiante):
     
@@ -503,7 +506,7 @@ def reimprimirInscripcion(request,ci_estudiante):
         return Response({"message":"error al optener los estudantes"},status=status.HTTP_400_BAD_REQUEST)
     
 
-
+#===========================funcion que permite cancelar una inscripcion de un estudiante y permite dar baja a todas las asignaturas que se le asigno=======
 @api_view(['GET']) 
 def cancelarInscripcion(request, ci_estudiante):
     try:
@@ -537,7 +540,7 @@ def cancelarInscripcion(request, ci_estudiante):
     
     return Response(response_message, status=status.HTTP_200_OK)
 
-
+#=======================funcion que permite emitir un boleto de inscrito para defenza de grado====================
 @api_view(['GET']) 
 def inscripcionParaDefensa(request,ci_estudiante):
     
@@ -565,7 +568,7 @@ def inscripcionParaDefensa(request,ci_estudiante):
         return Response ({"message":"No existe el CI ingresado"})
     
 
-
+#================================funcion que permite obtener todas las materias tomadas y aprobadas de un estudiante=================
 def culminacionMaterias(ci_estudiante):
     estudiante=Estudiante.objects.filter(ci_estudiante=ci_estudiante).first()
     asignaturas_cursadas = AsignaturaCursada.objects.filter(ci_estudiante=estudiante.ci_estudiante)
@@ -602,3 +605,20 @@ def GenerarNuevaBoletaEgresados(ci_estudiante):
     BoletaInscripcion.objects.create(numero_boleta=numero_boleta,ci_estudiante=ci_estudiante,gestion=gestion,emitido='si')
     print("------------",nuevo_numero_boleta_str)
     return nuevo_numero_boleta_str
+
+#---------------------------------------funcion que permite verificar la cantidad de materias tomadas por estudiante-----------------
+@api_view(['GET'])
+def revisar_inscripccion(request):
+    estudiantes=Estudiante.objects.filter(inscrito_gestion='si')
+    numero=1
+    for estudiante in estudiantes:
+        print("============",estudiante.ci_estudiante)
+        asignaturas=AsignaturaCursada.objects.filter(ci_estudiante=estudiante.ci_estudiante, anio_cursado='2024',)
+        if asignaturas and numero < 200:
+            numero_materias=asignaturas.count()
+            print ("***************",estudiante.ci_estudiante,"=",numero_materias,"=>",numero)
+            numero=numero+1
+        else:
+            return Response({"message":'finalizo'})
+        # else:
+        #     print("============",estudiante.ci_estudiante)
