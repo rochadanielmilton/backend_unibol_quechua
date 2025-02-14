@@ -80,13 +80,12 @@ def ObtenerEstudiantesRegularesInscripcion(request):
 def ObtenerEstudiantesNuevosInscripcion(request):
     anio_actual=str(datetime.now().year)
     estudiantes=Estudiante.objects.filter(baja='no',estado='habilitado',anio_ingreso=anio_actual).order_by('-numero_registro')
-    estudiante_serializer=EstudianteInscripcionSerializer(estudiantes, many=True).data
-    ultimo_año=str(datetime.now().year)
-    if estudiantes:
+    if len(estudiantes)>0:
+        estudiante_serializer=EstudianteInscripcionSerializer(estudiantes, many=True).data
         return Response({"estudiantes": estudiante_serializer,
-                         "anio_actual":ultimo_año})       
+                         "anio_actual":str(datetime.now().year)})       
     else:
-        return Response({"message":"error al optener los estudantes"},status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message":"No se encontraron estudiantes nuevos para esta gestión"},status=status.HTTP_400_BAD_REQUEST)
 
 #==========================ASIGANTUARAS NO CURSADAS PARA LA INSCRIPCION DE ESTUDIANTES==================== 
 @api_view(['GET']) 
@@ -131,7 +130,7 @@ def ObenerAsignaturasNoCursadas(request,ci_estudiante):
                 #     materias_tomadas.append(auxiliar)
                 #     print(asignatura.anio_cursado," - ",asignatura.codigo_asignatura," = ",materia.asignatura_malla_2018," = ", materia.total_horas," = ",(materia.pre_requisito1+","+materia.pre_requisito2) if materia.pre_requisito2 else materia.pre_requisito1," = ",asignatura.id_nota.nota_num_final," = ",asignatura.id_nota.resultado_gestion_espaniol," = ",asignatura.homologacion)
                     elif asig.malla_aplicada=='2023' and asig.estado_gestion_espaniol!='ABANDONO':#and asig.anio_asignado in['PRIMERO','SEGUNDO','TERCERO']:
-                        lista_asignaturas_aprobadas.append(asig.codigo_malla_ajustada)
+                        lista_asignaturas_aprobadas.append(asig.codigo_asignatura)
                         if asig.convalidacion:
                             lista_asignaturas_aprobadas.append(asig.convalidacion)
 
@@ -520,16 +519,19 @@ def cancelarInscripcion(request, ci_estudiante):
     
     # Eliminar las notas de estudiante para las asignaturas cursadas en el año actual
     asignaturas_cursadas = AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante, anio_cursado=ultimo_año)
-    notas_eliminadas = NotaEstudiante.objects.filter(id_asignatura_cursada__in=asignaturas_cursadas)
-    
-    # Eliminar las asignaturas cursadas para el año actual
+    ids_asignaturas_cursadas = asignaturas_cursadas.values_list('id', flat=True)
     asignaturas_cursadas.delete()
+    print("ids_asignaturas_cursadas",ids_asignaturas_cursadas)
+    notas_eliminadas = NotaEstudiante.objects.filter(id_asignatura_cursada__in=ids_asignaturas_cursadas)
+    
+    # Eliminar las asignaturas cursadas para el año actual    
+        
     notas_eliminadas.delete()
     # Actualizar el estado de inscripción del estudiante
     estudiante.inscrito_gestion = 'no'
     estudiante.save()
     try:
-        BoletaInscripcion.objects.get(ci_estudiante=ci_estudiante).delete()
+        BoletaInscripcion.objects.filter(ci_estudiante=ci_estudiante).order_by('-id').first().delete()
     except ObjectDoesNotExist:
         return Response({"message":"ya se cancelo el registro de este estudiante"})
     
