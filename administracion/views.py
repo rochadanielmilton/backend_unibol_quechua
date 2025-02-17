@@ -509,25 +509,19 @@ def reimprimirInscripcion(request,ci_estudiante):
 @api_view(['GET']) 
 def cancelarInscripcion(request, ci_estudiante):
     try:
-        # Verificar si el estudiante existe
         estudiante = Estudiante.objects.get(ci_estudiante=ci_estudiante)
     except ObjectDoesNotExist:
         return Response({"message": "No se encontró el estudiante."}, status=status.HTTP_404_NOT_FOUND)
     
-    # Obtener el año actual como cadena
     ultimo_año = str(datetime.now().year)
     
     # Eliminar las notas de estudiante para las asignaturas cursadas en el año actual
     asignaturas_cursadas = AsignaturaCursada.objects.filter(ci_estudiante=ci_estudiante, anio_cursado=ultimo_año)
-    ids_asignaturas_cursadas = asignaturas_cursadas.values_list('id', flat=True)
-    asignaturas_cursadas.delete()
-    print("ids_asignaturas_cursadas",ids_asignaturas_cursadas)
-    notas_eliminadas = NotaEstudiante.objects.filter(id_asignatura_cursada__in=ids_asignaturas_cursadas)
-    
-    # Eliminar las asignaturas cursadas para el año actual    
+    ids_notas_tomadas = asignaturas_cursadas.values_list('id_nota', flat=True)    
+    notas_eliminadas = NotaEstudiante.objects.filter(id__in=ids_notas_tomadas)
         
     notas_eliminadas.delete()
-    # Actualizar el estado de inscripción del estudiante
+    asignaturas_cursadas.delete()
     estudiante.inscrito_gestion = 'no'
     estudiante.save()
     try:
